@@ -35,6 +35,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://assetnest.btrnaidu.com,https://www.assetnest.btrnaidu.com}
       PORT: 8000
     ports:
       - "8000:8000"
