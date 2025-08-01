@@ -142,7 +142,7 @@ AssetNest is a comprehensive financial management solution designed for families
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/AssetNest.git
+   git clone https://github.com/naidu/AssetNest.git
    cd AssetNest
    ```
 

@@ -273,7 +273,7 @@ const Landing = () => {
                        fullWidth
                        startIcon={<GitHub />}
                        component="a"
-                       href="https://github.com/yourusername/AssetNest"
+                       href="https://github.com/naidu/AssetNest"
                        target="_blank"
                        rel="noopener noreferrer"
                        sx={{
@@ -465,7 +465,7 @@ const Landing = () => {
                  size="large"
                  startIcon={<GitHub />}
                  component="a"
-                 href="https://github.com/yourusername/AssetNest"
+                 href="https://github.com/naidu/AssetNest"
                  target="_blank"
                  rel="noopener noreferrer"
                  sx={{

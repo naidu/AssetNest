@@ -25,10 +25,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/AssetNest.git"
+    "url": "https://github.com/naidu/AssetNest.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/AssetNest/issues"
+    "url": "https://github.com/naidu/AssetNest/issues"
   },
-  "homepage": "https://github.com/yourusername/AssetNest#readme"
+  "homepage": "https://github.com/naidu/AssetNest#readme"
 } 

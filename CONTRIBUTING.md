@@ -13,7 +13,7 @@ Thank you for your interest in contributing to AssetNest! This document provides
 
 1. **Fork and clone the repository**
    ```bash
-   git clone https://github.com/yourusername/AssetNest.git
+   git clone https://github.com/naidu/AssetNest.git
    cd AssetNest
    ```
 
