@@ -49,6 +49,33 @@
    - Backend API: http://localhost:8000/api/health
    - Login with demo credentials: admin@demo.com / password
 
+### Environment Configuration
+
+The application uses several environment variables for configuration. Create a `.env` file in the root directory:
+
+```bash
+# Database Configuration
+DB_ROOT_PASSWORD=your_secure_root_password
+DB_NAME=assetnest
+DB_USER=assetnest_user
+DB_PASSWORD=your_secure_user_password
+
+# JWT Secret for authentication
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# CORS Configuration (comma-separated list of allowed origins)
+ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com,http://localhost:4000
+
+# Frontend API URL (optional, defaults to http://localhost:8000/api)
+REACT_APP_API_URL=https://your-backend-domain.com/api
+```
+
+**Important Notes:**
+- Replace all placeholder values with secure passwords and secrets
+- For production, use strong passwords and a 32+ character JWT secret
+- The `ALLOWED_ORIGINS` should include your frontend domain(s)
+- If your backend is on a different domain than localhost, set `REACT_APP_API_URL`
+
 ### Development Setup
 
 1. **Use development compose file**
@@ -137,14 +164,34 @@ Categories are hierarchical and household-specific. Add via the UI or directly i
 ### Security
 - Change all default passwords in `.env`
 - Use strong JWT secret (32+ characters)
-- Configure CORS for your domain
+- Configure CORS for your domain in `ALLOWED_ORIGINS`
 - Enable HTTPS in production
 - Regular database backups
+- Set appropriate `ALLOWED_ORIGINS` to prevent unauthorized access
 
 ### Monitoring
 - Health check endpoints available
 - Structured logging configured
 - Container health checks enabled
+
+## Troubleshooting
+
+### Common Issues
+
+**CORS Errors:**
+- Ensure your domain is included in `ALLOWED_ORIGINS`
+- Check that the backend is accessible from your frontend domain
+- Verify the `REACT_APP_API_URL` is set correctly for production
+
+**Database Connection Issues:**
+- Verify MySQL container is healthy: `docker-compose ps`
+- Check database logs: `docker-compose logs mysql`
+- Ensure environment variables are set correctly
+
+**Frontend Not Loading:**
+- Check if port 4000 is available (or change in docker-compose.yml)
+- Verify frontend container is running: `docker-compose ps`
+- Check frontend logs: `docker-compose logs frontend`
 
 ## Support
 
