@@ -1,6 +1,6 @@
 {
   "name": "assetnest-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AssetNest Backend API Server",
   "main": "src/app.js",
   "scripts": {
