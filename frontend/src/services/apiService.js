@@ -1,6 +1,19 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+// Automatically detect API URL based on current domain
+const getApiUrl = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api';
+  } else {
+    // For production, use the same domain as the frontend
+    return `${protocol}//${hostname}/api`;
+  }
+};
+
+const API_URL = process.env.REACT_APP_API_URL || getApiUrl();
 
 class ApiService {
   constructor() {
