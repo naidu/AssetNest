@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including devDependencies for build)
+RUN npm install
 
 # Copy source code
 COPY public/ ./public/
@@ -25,8 +25,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy built app from builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
 
-# Create non-root user for nginx
-RUN addgroup -g 1001 -S nginx && adduser -S nginx -u 1001 -G nginx
+# Create non-root user for nginx (handle existing group)
+RUN addgroup -g 1001 -S nginx 2>/dev/null || true && \
+    adduser -S nginx -u 1001 -G nginx 2>/dev/null || true
 
 # Change ownership of nginx directories
 RUN chown -R nginx:nginx /var/cache/nginx && \
