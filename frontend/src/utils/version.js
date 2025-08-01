@@ -7,5 +7,5 @@ export const getVersion = () => {
 
 export const getVersionDisplay = () => {
   const version = getVersion();
-  return `�� v${version}`;
+  return `v${version}`;
 }; 
