@@ -155,7 +155,19 @@ For issues, feature requests, or questions:
 
 ## License
 
-Proprietary - AssetNest SaaS Application
+MIT License - AssetNest is free and open source software.
+
+## 💝 Support AssetNest
+
+AssetNest is free and open source. If you find it useful, please consider supporting the project:
+
+### Donation Options
+
+- **PayPal**: me@btrnaidu.com
+- **Bitcoin**: `39bqKDKvyRmoHEXWaGcxuQf8aCaSoNfb3L`
+- **Ethereum**: `0xa6b7afc3d05f3197cd5b36a23270d92e31e45041`
+
+Your donations help us maintain and improve AssetNest for everyone. Every contribution makes a difference!
 
 ---
 

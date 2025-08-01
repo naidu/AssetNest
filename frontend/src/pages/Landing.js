@@ -121,9 +121,9 @@ const Landing = () => {
               <img 
                 src="/images/logo.png" 
                 alt="AssetNest Logo" 
-                style={{ height: '32px', width: 'auto' }}
+                style={{ height: '48px', width: 'auto' }}
               />
-              <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              <Typography variant="h5" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
                 AssetNest
               </Typography>
             </Box>
@@ -483,6 +483,67 @@ const Landing = () => {
                </Button>
             </Stack>
           </Paper>
+        </Container>
+      </Box>
+
+      {/* Donations Section */}
+      <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 6 }}>
+        <Container maxWidth="md">
+          <Box textAlign="center" mb={4}>
+            <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 600 }}>
+              Support AssetNest
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9, mb: 3 }}>
+              Help us keep AssetNest free and open source
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.8, mb: 4 }}>
+              Your donations help us maintain and improve AssetNest for everyone. Every contribution makes a difference!
+            </Typography>
+          </Box>
+          
+          <Grid container spacing={3} justifyContent="center">
+            <Grid item xs={12} sm={4}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)' }}>
+                <Typography variant="h6" gutterBottom>
+                  PayPal
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
+                  Quick and easy donations
+                </Typography>
+                <Typography variant="body1" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.2)', p: 1, borderRadius: 1 }}>
+                  me@btrnaidu.com
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} sm={4}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)' }}>
+                <Typography variant="h6" gutterBottom>
+                  Bitcoin
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
+                  Cryptocurrency donations
+                </Typography>
+                <Typography variant="body1" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.2)', p: 1, borderRadius: 1, fontSize: '0.8rem' }}>
+                  39bqKDKvyRmoHEXWaGcxuQf8aCaSoNfb3L
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} sm={4}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)' }}>
+                <Typography variant="h6" gutterBottom>
+                  Ethereum
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
+                  ETH and ERC-20 tokens
+                </Typography>
+                <Typography variant="body1" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.2)', p: 1, borderRadius: 1, fontSize: '0.8rem' }}>
+                  0xa6b7afc3d05f3197cd5b36a23270d92e31e45041
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
