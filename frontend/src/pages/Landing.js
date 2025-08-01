@@ -27,6 +27,7 @@ import {
   ArrowForward,
   CheckCircle,
   Star,
+  ContentCopy,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { getVersionDisplay } from '../utils/version';
@@ -100,6 +101,13 @@ const testimonials = [
 const Landing = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // You could add a toast notification here
+      console.log('Copied to clipboard:', text);
+    });
+  };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -504,44 +512,124 @@ const Landing = () => {
           
           <Grid container spacing={3} justifyContent="center">
             <Grid item xs={12} sm={4}>
-              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)' }}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Typography variant="h6" gutterBottom>
                   PayPal
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
                   Quick and easy donations
                 </Typography>
-                <Typography variant="body1" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.2)', p: 1, borderRadius: 1 }}>
-                  me@btrnaidu.com
-                </Typography>
+                <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="body1" sx={{ 
+                    fontFamily: 'monospace', 
+                    bgcolor: 'rgba(255,255,255,0.2)', 
+                    p: 1.5, 
+                    borderRadius: 1,
+                    color: 'white',
+                    wordBreak: 'break-all',
+                    mb: 1
+                  }}>
+                    me@btrnaidu.com
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<ContentCopy />}
+                    onClick={() => copyToClipboard('me@btrnaidu.com')}
+                    sx={{
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      color: 'white',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      },
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </Box>
               </Paper>
             </Grid>
             
             <Grid item xs={12} sm={4}>
-              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)' }}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Typography variant="h6" gutterBottom>
                   Bitcoin
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
                   Cryptocurrency donations
                 </Typography>
-                <Typography variant="body1" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.2)', p: 1, borderRadius: 1, fontSize: '0.8rem' }}>
-                  39bqKDKvyRmoHEXWaGcxuQf8aCaSoNfb3L
-                </Typography>
+                <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="body2" sx={{ 
+                    fontFamily: 'monospace', 
+                    bgcolor: 'rgba(255,255,255,0.2)', 
+                    p: 1.5, 
+                    borderRadius: 1,
+                    color: 'white',
+                    wordBreak: 'break-all',
+                    fontSize: '0.75rem',
+                    mb: 1
+                  }}>
+                    39bqKDKvyRmoHEXWaGcxuQf8aCaSoNfb3L
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<ContentCopy />}
+                    onClick={() => copyToClipboard('39bqKDKvyRmoHEXWaGcxuQf8aCaSoNfb3L')}
+                    sx={{
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      color: 'white',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      },
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </Box>
               </Paper>
             </Grid>
             
             <Grid item xs={12} sm={4}>
-              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)' }}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Typography variant="h6" gutterBottom>
                   Ethereum
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
                   ETH and ERC-20 tokens
                 </Typography>
-                <Typography variant="body1" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.2)', p: 1, borderRadius: 1, fontSize: '0.8rem' }}>
-                  0xa6b7afc3d05f3197cd5b36a23270d92e31e45041
-                </Typography>
+                <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="body2" sx={{ 
+                    fontFamily: 'monospace', 
+                    bgcolor: 'rgba(255,255,255,0.2)', 
+                    p: 1.5, 
+                    borderRadius: 1,
+                    color: 'white',
+                    wordBreak: 'break-all',
+                    fontSize: '0.75rem',
+                    mb: 1
+                  }}>
+                    0xa6b7afc3d05f3197cd5b36a23270d92e31e45041
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<ContentCopy />}
+                    onClick={() => copyToClipboard('0xa6b7afc3d05f3197cd5b36a23270d92e31e45041')}
+                    sx={{
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      color: 'white',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      },
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </Box>
               </Paper>
             </Grid>
           </Grid>
