@@ -12,7 +12,6 @@ const getAssets = async (req, res) => {
         a.display_name,
         a.acquisition_dt,
         a.current_value,
-        a.purchase_price,
         a.currency,
         a.notes,
         a.status
@@ -138,7 +137,7 @@ const getAssetById = async (req, res) => {
 };
 
 const createAsset = async (req, res) => {
-  const { asset_type_id, display_name, acquisition_dt, current_value, purchase_price, currency, notes, details } = req.body;
+  const { asset_type_id, display_name, acquisition_dt, current_value, currency, notes, details } = req.body;
   const pool = getPool();
 
   try {
@@ -147,22 +146,19 @@ const createAsset = async (req, res) => {
 
     try {
       // Handle empty strings for numeric fields
-      const processedPurchasePrice = purchase_price === '' ? null : purchase_price;
       const processedCurrentValue = current_value === '' ? null : current_value;
 
       // Create main asset record - handle undefined values
       const [assetResult] = await connection.execute(
-        'INSERT INTO assets (household_id, asset_type_id, display_name, acquisition_dt, current_value, purchase_price, currency, notes, updated_by_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO assets (household_id, asset_type_id, display_name, acquisition_dt, current_value, currency, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [
           req.user.household_id, 
           asset_type_id, 
           display_name || null, 
           acquisition_dt || null, 
-          processedCurrentValue, 
-          processedPurchasePrice,
+          processedCurrentValue,
           currency || 'INR', 
-          notes || null,
-          req.user.user_id
+          notes || null
         ]
       );
 
@@ -283,7 +279,7 @@ const createAsset = async (req, res) => {
 
 const updateAsset = async (req, res) => {
   const { id } = req.params;
-  const { display_name, current_value, purchase_price, currency, notes, details } = req.body;
+  const { display_name, current_value, currency, notes, details } = req.body;
   const pool = getPool();
 
   try {
@@ -306,13 +302,12 @@ const updateAsset = async (req, res) => {
       const currentAsset = currentAssets[0];
 
       // Handle empty strings for numeric fields
-      const processedPurchasePrice = purchase_price === '' ? null : purchase_price;
       const processedCurrentValue = current_value === '' ? null : current_value;
 
       // Update main asset record
       await connection.execute(
-        'UPDATE assets SET display_name = ?, current_value = ?, purchase_price = ?, currency = ?, notes = ?, updated_by_user_id = ? WHERE asset_id = ?',
-        [display_name, processedCurrentValue, processedPurchasePrice, currency, notes, req.user.user_id, id]
+        'UPDATE assets SET display_name = ?, current_value = ?, currency = ?, notes = ? WHERE asset_id = ?',
+        [display_name, processedCurrentValue, currency, notes, id]
       );
 
       // Record changes in history
@@ -324,10 +319,6 @@ const updateAsset = async (req, res) => {
 
       if (currentAsset.current_value !== processedCurrentValue) {
         changes.push(['current_value', currentAsset.current_value, processedCurrentValue, 'Value updated']);
-      }
-
-      if (currentAsset.purchase_price !== processedPurchasePrice) {
-        changes.push(['purchase_price', currentAsset.purchase_price, processedPurchasePrice, 'Purchase price updated']);
       }
 
       if (currentAsset.currency !== currency) {
