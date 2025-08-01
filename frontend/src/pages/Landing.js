@@ -29,6 +29,7 @@ import {
   Star,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
+import { getVersionDisplay } from '../utils/version';
 
 const features = [
   {
@@ -263,7 +264,7 @@ const Landing = () => {
                     }}
                   >
                                          <Typography variant="h6" gutterBottom align="center">
-                       🚀 v1.0.0
+                       {getVersionDisplay()}
                      </Typography>
                      <Typography variant="body2" align="center" sx={{ mb: 2 }}>
                        Open source financial management platform

@@ -9,7 +9,8 @@
     "build": "docker-compose build",
     "stop": "docker-compose down",
     "logs": "docker-compose logs -f",
-    "clean": "docker-compose down -v --remove-orphans"
+    "clean": "docker-compose down -v --remove-orphans",
+    "version": "node scripts/update-version.js"
   },
   "keywords": [
     "finance",
