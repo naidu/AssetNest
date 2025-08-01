@@ -45,7 +45,7 @@
    ```
 
 4. **Verify Deployment**
-   - Frontend: http://localhost:3000 (Landing page and application)
+   - Frontend: http://localhost:4000 (Landing page and application)
    - Backend API: http://localhost:8000/api/health
    - Login with demo credentials: admin@demo.com / password
 
