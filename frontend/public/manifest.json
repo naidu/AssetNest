@@ -1,0 +1,15 @@
+{
+  "short_name": "AssetNest",
+  "name": "AssetNest - Family Asset & Finance Tracking",
+  "icons": [
+    {
+      "src": "images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2E7D32",
+  "background_color": "#ffffff"
+}
