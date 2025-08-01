@@ -1,0 +1,36 @@
+{
+    "projectType": "docker-compose",
+    "dockerCompose": {
+      "file": "docker-compose.yml",
+      "projectName": "amstar-stack"
+    },
+    "commands": [
+      {
+        "name": "Up",
+        "command": "docker compose up -d",
+        "description": "Start all containers"
+      },
+      {
+        "name": "Down",
+        "command": "docker compose down",
+        "description": "Stop all containers"
+      },
+      {
+        "name": "Pull",
+        "command": "docker compose pull",
+        "description": "Pull latest images"
+      },
+      {
+        "name": "Logs",
+        "command": "docker compose logs -f",
+        "description": "Follow logs"
+      }
+    ],
+    "devContainers": {
+      "enabled": false
+    },
+    "git": {
+      "autoPush": false
+    }
+  }
+  
