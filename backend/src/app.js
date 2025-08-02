@@ -34,7 +34,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',') 
   : process.env.NODE_ENV === 'production' 
     ? ['http://localhost:4000', 'https://assetnest.btrnaidu.com', 'https://www.assetnest.btrnaidu.com'] 
-    : true;
+    : ['http://localhost:3000', 'http://localhost:4000', 'http://localhost:8000'];
 
 app.use(cors({
   origin: allowedOrigins,
