@@ -2,9 +2,11 @@ const Joi = require('joi');
 
 const validateRequest = (schema) => {
   return (req, res, next) => {
+    console.log('Validation request body:', req.body);
     const { error } = schema.validate(req.body);
 
     if (error) {
+      console.log('Validation error:', error.details);
       return res.status(400).json({
         error: 'Validation error',
         details: error.details.map(detail => detail.message)
