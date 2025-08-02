@@ -6,9 +6,9 @@ const getApiUrl = () => {
   const protocol = window.location.protocol;
   
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:8000/api';
+    return 'http://localhost:8000/api';  // Local development
   } else {
-    // For production, use the same domain as the frontend
+    // For production, use the same domain as the frontend without port
     return `${protocol}//${hostname}/api`;
   }
 };
