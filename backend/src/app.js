@@ -36,6 +36,12 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? ['http://localhost:4000', 'https://assetnest.btrnaidu.com', 'https://www.assetnest.btrnaidu.com'] 
     : ['http://localhost:3000', 'http://localhost:4000', 'http://localhost:8000'];
 
+console.log('CORS Configuration:', {
+  NODE_ENV: process.env.NODE_ENV,
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
+  allowedOrigins: allowedOrigins
+});
+
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
