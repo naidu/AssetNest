@@ -146,9 +146,65 @@ const profile = async (req, res) => {
   }
 };
 
+const getUserPreferences = async (req, res) => {
+  const pool = getPool();
+
+  try {
+    const [preferences] = await pool.execute(`
+      SELECT default_currency, date_format, timezone
+      FROM user_preferences 
+      WHERE user_id = ?
+    `, [req.user.user_id]);
+
+    if (preferences.length === 0) {
+      // Create default preferences if none exist
+      await pool.execute(`
+        INSERT INTO user_preferences (user_id, default_currency, date_format, timezone)
+        VALUES (?, 'INR', 'DD/MM/YYYY', 'Asia/Kolkata')
+      `, [req.user.user_id]);
+
+      res.json({
+        default_currency: 'INR',
+        date_format: 'DD/MM/YYYY',
+        timezone: 'Asia/Kolkata'
+      });
+    } else {
+      res.json(preferences[0]);
+    }
+
+  } catch (error) {
+    console.error('Get user preferences error:', error);
+    res.status(500).json({ error: 'Failed to fetch user preferences' });
+  }
+};
+
+const updateUserPreferences = async (req, res) => {
+  const { default_currency, date_format, timezone } = req.body;
+  const pool = getPool();
+
+  try {
+    await pool.execute(`
+      INSERT INTO user_preferences (user_id, default_currency, date_format, timezone)
+      VALUES (?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        default_currency = VALUES(default_currency),
+        date_format = VALUES(date_format),
+        timezone = VALUES(timezone)
+    `, [req.user.user_id, default_currency, date_format, timezone]);
+
+    res.json({ message: 'Preferences updated successfully' });
+
+  } catch (error) {
+    console.error('Update user preferences error:', error);
+    res.status(500).json({ error: 'Failed to update user preferences' });
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
-  profile
+  profile,
+  getUserPreferences,
+  updateUserPreferences
 };

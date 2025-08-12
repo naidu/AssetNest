@@ -54,7 +54,9 @@ INSERT IGNORE INTO assets (asset_id, household_id, asset_type_id, display_name, 
 (2, 1, 2, 'TCS Shares', '2021-03-10', 125000.00, 'INR', '50 shares of TCS'),
 (3, 1, 4, 'SBI Blue Chip Fund', '2021-06-01', 75000.00, 'INR', 'Mutual fund SIP'),
 (4, 1, 3, 'Gold Jewelry', '2019-12-25', 150000.00, 'INR', 'Traditional gold jewelry'),
-(5, 1, 5, 'Term Life Insurance', '2020-05-01', 500000.00, 'INR', 'Term insurance policy');
+(5, 1, 5, 'Term Life Insurance', '2020-05-01', 500000.00, 'INR', 'Term insurance policy'),
+(6, 1, 2, 'Apple Inc. Shares', '2022-01-15', 50000.00, 'EUR', '50 shares of Apple Inc.'),
+(7, 1, 1, 'European Property', '2021-06-01', 250000.00, 'EUR', 'Investment property in Germany');
 
 -- Asset Details
 INSERT IGNORE INTO property_assets (asset_id, property_kind, ownership_mode, address_line1, city, state, country, postcode, area_sqft, purchase_price, purchase_dt) VALUES
@@ -91,3 +93,8 @@ INSERT IGNORE INTO budgets (budget_id, household_id, category_id, period_start, 
 -- Sample Net Worth Snapshot
 INSERT IGNORE INTO networth_snapshots (snapshot_id, household_id, snapshot_dt, total_assets, total_liabs, net_worth) VALUES
 (1, 1, '2024-01-01', 5850000.00, 0.00, 5850000.00);
+
+-- User Preferences
+INSERT IGNORE INTO user_preferences (user_id, default_currency, date_format, timezone) VALUES
+(1, 'INR', 'DD/MM/YYYY', 'Asia/Kolkata'),
+(2, 'INR', 'DD/MM/YYYY', 'Asia/Kolkata');

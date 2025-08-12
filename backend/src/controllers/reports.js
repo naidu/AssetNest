@@ -121,21 +121,45 @@ const getAssetAllocation = async (req, res) => {
   const pool = getPool();
 
   try {
+    // Get asset allocation grouped by currency
     const [allocationData] = await pool.execute(`
       SELECT 
+        a.currency,
         at.type_name as asset_type,
         COUNT(a.asset_id) as count,
         COALESCE(SUM(a.current_value), 0) as total_value,
         ROUND((COALESCE(SUM(a.current_value), 0) / 
-          (SELECT SUM(current_value) FROM assets WHERE household_id = ? AND status = 'active')) * 100, 2) as percentage
+          (SELECT SUM(current_value) FROM assets WHERE household_id = ? AND status = 'active' AND currency = a.currency)) * 100, 2) as percentage
       FROM assets a
       JOIN asset_types at ON a.asset_type_id = at.asset_type_id
       WHERE a.household_id = ? AND a.status = 'active'
-      GROUP BY at.asset_type_id
-      ORDER BY total_value DESC
+      GROUP BY a.currency, at.asset_type_id
+      ORDER BY a.currency, total_value DESC
     `, [req.user.household_id, req.user.household_id]);
 
-    res.json({ asset_allocation: allocationData });
+    // Group by currency
+    const groupedByCurrency = {};
+    allocationData.forEach(item => {
+      if (!groupedByCurrency[item.currency]) {
+        groupedByCurrency[item.currency] = {
+          currency: item.currency,
+          total_value: 0,
+          assets: []
+        };
+      }
+      groupedByCurrency[item.currency].assets.push({
+        asset_type: item.asset_type,
+        count: item.count,
+        total_value: item.total_value,
+        percentage: item.percentage
+      });
+      groupedByCurrency[item.currency].total_value += parseFloat(item.total_value);
+    });
+
+    // Convert to array and sort by total value
+    const result = Object.values(groupedByCurrency).sort((a, b) => b.total_value - a.total_value);
+
+    res.json({ asset_allocation: result });
 
   } catch (error) {
     console.error('Get asset allocation error:', error);

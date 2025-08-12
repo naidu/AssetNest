@@ -31,6 +31,16 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_email (email)
 );
 
+CREATE TABLE IF NOT EXISTS user_preferences (
+    user_id           INT UNSIGNED PRIMARY KEY,
+    default_currency  CHAR(3) DEFAULT 'INR',
+    date_format       VARCHAR(20) DEFAULT 'DD/MM/YYYY',
+    timezone          VARCHAR(50) DEFAULT 'Asia/Kolkata',
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 -- 2. LOOK-UP TABLES
 CREATE TABLE IF NOT EXISTS asset_types (
     asset_type_id  TINYINT UNSIGNED PRIMARY KEY,
