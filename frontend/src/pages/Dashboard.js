@@ -86,6 +86,21 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
+  const formatCurrency = (amount, currency = 'INR') => {
+    if (!amount) return '₹0';
+    
+    const symbols = {
+      'INR': '₹',
+      'USD': '$',
+      'EUR': '€',
+      'GBP': '£'
+    };
+    
+    const symbol = symbols[currency] || currency;
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    return `${symbol}${numericAmount.toLocaleString('en-IN')}`;
+  };
+
   const StatCard = ({ title, value, icon, color = 'primary', currency = 'INR' }) => (
     <Card sx={{ height: '100%' }}>
       <CardContent>
@@ -107,21 +122,6 @@ const Dashboard = () => {
   );
 
   const COLORS = ['#2E7D32', '#FFC107', '#FF9800', '#F44336', '#9C27B0'];
-
-  const formatCurrency = (amount, currency = 'INR') => {
-    if (!amount) return '₹0';
-    
-    const symbols = {
-      'INR': '₹',
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£'
-    };
-    
-    const symbol = symbols[currency] || currency;
-    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return `${symbol}${numericAmount.toLocaleString('en-IN')}`;
-  };
 
   if (loading) {
     return (
