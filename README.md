@@ -52,10 +52,16 @@ A comprehensive asset management system built with React frontend and Node.js ba
 The application comes with a pre-configured demo user for testing:
 
 **Demo User Credentials:**
-- **Email**: demo@assetnest.com
-- **Password**: demo123456
-- **Name**: Demo User
-- **Household**: Demo Household
+- **Email**: admin@demo.com
+- **Password**: password
+- **Name**: Demo Admin
+- **Household**: Demo Family
+
+**Alternative Demo User:**
+- **Email**: member@demo.com
+- **Password**: password
+- **Name**: Demo Member
+- **Household**: Demo Family
 
 You can use these credentials to log in and explore the application features without creating a new account.
 
