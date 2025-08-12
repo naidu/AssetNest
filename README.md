@@ -47,6 +47,18 @@ A comprehensive asset management system built with React frontend and Node.js ba
    - Backend API: http://localhost:8000/api/health (Health check)
    - Database: MySQL running in container
 
+## Demo Access
+
+The application comes with a pre-configured demo user for testing:
+
+**Demo User Credentials:**
+- **Email**: demo@assetnest.com
+- **Password**: demo123456
+- **Name**: Demo User
+- **Household**: Demo Household
+
+You can use these credentials to log in and explore the application features without creating a new account.
+
 ## Environment Configuration
 
 ### Local Development

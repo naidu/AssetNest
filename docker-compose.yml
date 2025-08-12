@@ -74,6 +74,7 @@ services:
 
 volumes:
   mysql_data:
+    name: assetnest-db
 
 networks:
   assetnest-network:
