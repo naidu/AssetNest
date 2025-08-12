@@ -90,7 +90,9 @@ const Dashboard = () => {
               {title}
             </Typography>
             <Typography variant="h4" component="div" color={color}>
-              {typeof value === 'number' ? `₹${value.toLocaleString('en-IN')}` : value}
+              {typeof value === 'number' ? `₹${value.toLocaleString('en-IN')}` : 
+               typeof value === 'string' ? `₹${parseFloat(value).toLocaleString('en-IN')}` : 
+               `₹${0}`}
             </Typography>
           </Box>
           <Box color={`${color}.main`}>

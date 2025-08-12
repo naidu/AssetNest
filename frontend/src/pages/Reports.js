@@ -78,7 +78,7 @@ const Reports = () => {
   const COLORS = ['#2E7D32', '#FFC107', '#FF9800', '#F44336', '#9C27B0', '#2196F3'];
 
   const formatCurrency = (amount, currency = 'INR') => {
-    if (!amount) return '0';
+    if (!amount) return '₹0';
     
     const symbols = {
       'INR': '₹',
@@ -88,7 +88,8 @@ const Reports = () => {
     };
     
     const symbol = symbols[currency] || currency;
-    return `${symbol}${parseFloat(amount).toLocaleString('en-IN')}`;
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    return `${symbol}${numericAmount.toLocaleString('en-IN')}`;
   };
 
   const getTotalAssets = () => {
