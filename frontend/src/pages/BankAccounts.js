@@ -180,6 +180,8 @@ const BankAccounts = () => {
       case 'credit': return 'warning';
       case 'loan': return 'error';
       case 'investment': return 'info';
+      case 'nre': return 'secondary';
+      case 'nro': return 'secondary';
       default: return 'default';
     }
   };
@@ -365,6 +367,8 @@ const BankAccounts = () => {
                   <MenuItem value="credit">Credit</MenuItem>
                   <MenuItem value="loan">Loan</MenuItem>
                   <MenuItem value="investment">Investment</MenuItem>
+                  <MenuItem value="nre">NRE (Non-Resident External)</MenuItem>
+                  <MenuItem value="nro">NRO (Non-Resident Ordinary)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -487,6 +491,8 @@ const BankAccounts = () => {
                   <MenuItem value="credit">Credit</MenuItem>
                   <MenuItem value="loan">Loan</MenuItem>
                   <MenuItem value="investment">Investment</MenuItem>
+                  <MenuItem value="nre">NRE (Non-Resident External)</MenuItem>
+                  <MenuItem value="nro">NRO (Non-Resident Ordinary)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

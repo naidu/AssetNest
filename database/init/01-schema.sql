@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS bank_accounts (
     account_id     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     asset_id       BIGINT UNSIGNED NOT NULL,
     bank_name      VARCHAR(100) NOT NULL,
-    account_type   ENUM('savings','current','credit','loan','investment') NOT NULL,
+    account_type   ENUM('savings','current','credit','loan','investment','nre','nro') NOT NULL,
     account_number VARCHAR(50),
     ifsc_code      VARCHAR(20),
     branch_name    VARCHAR(100),
