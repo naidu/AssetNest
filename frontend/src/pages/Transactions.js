@@ -26,8 +26,11 @@ import {
 } from '@mui/material';
 import { Add, Payment } from '@mui/icons-material';
 import apiService from '../services/apiService';
+import { useCurrency } from '../context/CurrencyContext';
+import { formatCurrency } from '../utils/currencyUtils';
 
 const Transactions = () => {
+  const { selectedCurrency, currencies } = useCurrency();
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [assets, setAssets] = useState([]);
@@ -40,7 +43,7 @@ const Transactions = () => {
     purpose: '',
     txn_type: 'expense',
     amount: '',
-    currency: 'INR',
+    currency: selectedCurrency,
     txn_date: new Date().toISOString().split('T')[0],
     notes: ''
   });
@@ -54,7 +57,9 @@ const Transactions = () => {
           apiService.getCategories(),
           apiService.getAssets()
         ]);
-        setTransactions(transactionsResponse.transactions || []);
+        // Filter transactions by selected currency
+        const filteredTransactions = (transactionsResponse.transactions || []).filter(transaction => transaction.currency === selectedCurrency);
+        setTransactions(filteredTransactions);
         setCategories(categoriesResponse.categories || []);
         setAssets(assetsResponse.assets || []);
       } catch (err) {
@@ -66,7 +71,7 @@ const Transactions = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedCurrency]);
 
   const handleAddTransaction = async () => {
     try {
@@ -78,13 +83,14 @@ const Transactions = () => {
         purpose: '',
         txn_type: 'expense',
         amount: '',
-        currency: 'INR',
+        currency: selectedCurrency,
         txn_date: new Date().toISOString().split('T')[0],
         notes: ''
       });
       // Refresh transactions list
       const response = await apiService.getTransactions({ limit: 50 });
-      setTransactions(response.transactions || []);
+      const filteredTransactions = (response.transactions || []).filter(transaction => transaction.currency === selectedCurrency);
+      setTransactions(filteredTransactions);
     } catch (err) {
       setError('Failed to create transaction');
       console.error('Create transaction error:', err);
@@ -100,19 +106,7 @@ const Transactions = () => {
     }
   };
 
-  const formatCurrency = (amount, currency = 'INR') => {
-    if (!amount) return '0';
-    
-    const symbols = {
-      'INR': '₹',
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£'
-    };
-    
-    const symbol = symbols[currency] || currency;
-    return `${symbol}${parseFloat(amount).toLocaleString('en-IN')}`;
-  };
+
 
   if (loading) {
     return (
@@ -175,7 +169,7 @@ const Transactions = () => {
                       color={transaction.txn_type === 'income' ? 'success.main' : 'error.main'}
                       fontWeight="bold"
                     >
-                      {transaction.txn_type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount, transaction.currency)}
+                      {transaction.txn_type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount, transaction.currency, currencies)}
                     </Typography>
                   </TableCell>
                 </TableRow>

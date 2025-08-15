@@ -28,8 +28,8 @@ const getTransactions = async (req, res) => {
       params.push(end_date);
     }
 
-    const limitNum = Number(limit);
-    const pageNum = Number(page);
+    const limitNum = parseInt(limit) || 50;
+    const pageNum = parseInt(page) || 1;
     const offsetNum = (pageNum - 1) * limitNum;
     
     const [transactions] = await pool.execute(`
@@ -50,10 +50,10 @@ const getTransactions = async (req, res) => {
       LEFT JOIN assets a ON t.asset_id = a.asset_id
       LEFT JOIN txn_categories c ON t.category_id = c.category_id
       LEFT JOIN users u ON t.user_id = u.user_id
-      WHERE t.household_id = ?
+      ${whereClause}
       ORDER BY t.txn_date DESC, t.txn_id DESC
-      LIMIT 5
-    `, [req.user.household_id]);
+      LIMIT ${limitNum} OFFSET ${offsetNum}
+    `, params);
 
     // Get total count
     const [countResult] = await pool.execute(`

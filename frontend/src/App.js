@@ -18,6 +18,7 @@ import Settings from './pages/Settings';
 
 // Context
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 
 // Theme configuration
 const theme = createTheme({
@@ -78,40 +79,42 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
         <AuthProvider>
-          <Router>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              } />
-              <Route path="/register" element={
-                <PublicRoute>
-                  <Register />
-                </PublicRoute>
-              } />
+          <CurrencyProvider>
+            <Router>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                } />
+                <Route path="/register" element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                } />
 
-              {/* Protected Routes */}
-              <Route path="/app" element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Navigate to="/app/dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="assets" element={<Assets />} />
-                <Route path="transactions" element={<Transactions />} />
-                <Route path="budgets" element={<Budgets />} />
-                <Route path="reports" element={<Reports />} />
-                <Route path="settings" element={<Settings />} />
-              </Route>
+                {/* Protected Routes */}
+                <Route path="/app" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }>
+                  <Route index element={<Navigate to="/app/dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="assets" element={<Assets />} />
+                  <Route path="transactions" element={<Transactions />} />
+                  <Route path="budgets" element={<Budgets />} />
+                  <Route path="reports" element={<Reports />} />
+                  <Route path="settings" element={<Settings />} />
+                </Route>
 
-              {/* Catch all route */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Router>
+                {/* Catch all route */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Router>
+          </CurrencyProvider>
         </AuthProvider>
     </ThemeProvider>
   );

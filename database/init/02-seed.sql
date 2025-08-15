@@ -76,11 +76,24 @@ INSERT IGNORE INTO insurance_policies (asset_id, policy_number, provider, policy
 
 -- Sample Transactions
 INSERT IGNORE INTO transactions (txn_id, household_id, user_id, asset_id, category_id, purpose, txn_type, amount, currency, txn_date, notes) VALUES
+-- Historical transactions (January 2024)
 (1, 1, 1, NULL, 1, 'Monthly Salary', 'income', 80000.00, 'INR', '2024-01-01', 'January salary'),
 (2, 1, 1, NULL, 10, 'Grocery Shopping', 'expense', 5000.00, 'INR', '2024-01-02', 'Monthly groceries'),
 (3, 1, 1, 3, 19, 'SIP Investment', 'expense', 10000.00, 'INR', '2024-01-05', 'Monthly SIP'),
 (4, 1, 1, NULL, 12, 'Electricity Bill', 'expense', 3500.00, 'INR', '2024-01-10', 'Monthly electricity'),
-(5, 1, 1, NULL, 15, 'Movie Tickets', 'expense', 800.00, 'INR', '2024-01-15', 'Family movie night');
+(5, 1, 1, NULL, 15, 'Movie Tickets', 'expense', 800.00, 'INR', '2024-01-15', 'Family movie night'),
+-- Current month transactions (August 2025)
+(6, 1, 1, NULL, 1, 'Monthly Salary', 'income', 85000.00, 'INR', '2025-08-01', 'August salary'),
+(7, 1, 1, NULL, 10, 'Grocery Shopping', 'expense', 5500.00, 'INR', '2025-08-03', 'Monthly groceries'),
+(8, 1, 1, 3, 19, 'SIP Investment', 'expense', 12000.00, 'INR', '2025-08-05', 'Monthly SIP'),
+(9, 1, 1, NULL, 12, 'Electricity Bill', 'expense', 3800.00, 'INR', '2025-08-10', 'Monthly electricity'),
+(10, 1, 1, NULL, 15, 'Movie Tickets', 'expense', 1000.00, 'INR', '2025-08-12', 'Family movie night'),
+(11, 1, 1, NULL, 11, 'Fuel', 'expense', 2500.00, 'INR', '2025-08-08', 'Car fuel'),
+(12, 1, 1, NULL, 16, 'Shopping', 'expense', 3000.00, 'INR', '2025-08-14', 'Clothing purchase'),
+-- EUR transactions for testing multi-currency
+(13, 1, 1, NULL, 1, 'European Salary', 'income', 5000.00, 'EUR', '2025-08-01', 'European job salary'),
+(14, 1, 1, NULL, 10, 'European Groceries', 'expense', 150.00, 'EUR', '2025-08-05', 'European groceries'),
+(15, 1, 1, NULL, 12, 'European Utilities', 'expense', 200.00, 'EUR', '2025-08-10', 'European utilities');
 
 -- Sample Budgets
 INSERT IGNORE INTO budgets (budget_id, household_id, category_id, period_start, period_end, planned_amount) VALUES

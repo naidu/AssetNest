@@ -23,8 +23,11 @@ import {
 } from '@mui/material';
 import { Add, TrendingUp, Delete } from '@mui/icons-material';
 import apiService from '../services/apiService';
+import { useCurrency } from '../context/CurrencyContext';
+import { formatCurrency } from '../utils/currencyUtils';
 
 const Budgets = () => {
+  const { selectedCurrency, currencies } = useCurrency();
   const [budgets, setBudgets] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +48,9 @@ const Budgets = () => {
           apiService.getBudgets(),
           apiService.getCategories()
         ]);
-        setBudgets(budgetsResponse.budgets || []);
+        // Filter budgets by selected currency
+        const filteredBudgets = (budgetsResponse.budgets || []).filter(budget => budget.currency === selectedCurrency);
+        setBudgets(filteredBudgets);
         setCategories(categoriesResponse.categories || []);
       } catch (err) {
         setError('Failed to load budgets');
@@ -56,7 +61,7 @@ const Budgets = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedCurrency]);
 
   const handleAddBudget = async () => {
     try {
@@ -70,7 +75,8 @@ const Budgets = () => {
       });
       // Refresh budgets list
       const response = await apiService.getBudgets();
-      setBudgets(response.budgets || []);
+      const filteredBudgets = (response.budgets || []).filter(budget => budget.currency === selectedCurrency);
+      setBudgets(filteredBudgets);
     } catch (err) {
       setError('Failed to create budget');
       console.error('Create budget error:', err);
@@ -95,19 +101,7 @@ const Budgets = () => {
     return 'error';
   };
 
-  const formatCurrency = (amount, currency = 'INR') => {
-    if (!amount) return '0';
-    
-    const symbols = {
-      'INR': '₹',
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£'
-    };
-    
-    const symbol = symbols[currency] || currency;
-    return `${symbol}${parseFloat(amount).toLocaleString('en-IN')}`;
-  };
+
 
   if (loading) {
     return (
@@ -166,10 +160,10 @@ const Budgets = () => {
                     <Box mb={2}>
                       <Box display="flex" justifyContent="space-between" mb={1}>
                         <Typography variant="body2" color="textSecondary">
-                          Spent: {formatCurrency(budget.actual_amount, budget.currency)}
+                          Spent: {formatCurrency(budget.actual_amount, budget.currency, currencies)}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          Budget: {formatCurrency(budget.planned_amount, budget.currency)}
+                          Budget: {formatCurrency(budget.planned_amount, budget.currency, currencies)}
                         </Typography>
                       </Box>
                       <LinearProgress

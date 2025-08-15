@@ -27,8 +27,11 @@ import {
 } from '@mui/material';
 import { Add, AccountBalance, Edit, Delete, History } from '@mui/icons-material';
 import apiService from '../services/apiService';
+import { useCurrency } from '../context/CurrencyContext';
+import { formatCurrency } from '../utils/currencyUtils';
 
 const Assets = () => {
+  const { selectedCurrency, currencies } = useCurrency();
   const [assets, setAssets] = useState([]);
   const [assetTypes, setAssetTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +48,7 @@ const Assets = () => {
     acquisition_dt: '',
     current_value: '',
     purchase_price: '',
-    currency: 'INR',
+    currency: selectedCurrency,
     notes: '',
     details: {}
   });
@@ -58,7 +61,9 @@ const Assets = () => {
           apiService.getAssets(),
           apiService.getAssetTypes()
         ]);
-        setAssets(assetsResponse.assets || []);
+        // Filter assets by selected currency
+        const filteredAssets = (assetsResponse.assets || []).filter(asset => asset.currency === selectedCurrency);
+        setAssets(filteredAssets);
         setAssetTypes(typesResponse.asset_types || []);
       } catch (err) {
         setError('Failed to load assets');
@@ -69,7 +74,7 @@ const Assets = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedCurrency]);
 
   const handleAddAsset = async () => {
     try {
@@ -80,13 +85,14 @@ const Assets = () => {
         display_name: '',
         acquisition_dt: '',
         current_value: '',
-        currency: 'INR',
+        currency: selectedCurrency,
         notes: '',
         details: {}
       });
       // Refresh assets list
       const response = await apiService.getAssets();
-      setAssets(response.assets || []);
+      const filteredAssets = (response.assets || []).filter(asset => asset.currency === selectedCurrency);
+      setAssets(filteredAssets);
     } catch (err) {
       setError('Failed to create asset');
       console.error('Create asset error:', err);
@@ -124,7 +130,8 @@ const Assets = () => {
       });
       // Refresh assets list
       const response = await apiService.getAssets();
-      setAssets(response.assets || []);
+      const filteredAssets = (response.assets || []).filter(asset => asset.currency === selectedCurrency);
+      setAssets(filteredAssets);
     } catch (err) {
       setError('Failed to update asset');
       console.error('Update asset error:', err);
@@ -164,19 +171,7 @@ const Assets = () => {
     }
   };
 
-  const formatCurrency = (amount, currency) => {
-    if (!amount) return '0';
-    
-    const symbols = {
-      'INR': '₹',
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£'
-    };
-    
-    const symbol = symbols[currency] || currency;
-    return `${symbol}${parseFloat(amount).toLocaleString('en-IN')}`;
-  };
+
 
   if (loading) {
     return (
@@ -256,11 +251,11 @@ const Assets = () => {
                     {asset.type_name}
                   </Typography>
                   <Typography variant="h5" color="primary" gutterBottom>
-                    Current: {formatCurrency(asset.current_value, asset.currency)}
+                    Current: {formatCurrency(asset.current_value, asset.currency, currencies)}
                   </Typography>
                   {asset.purchase_price && (
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      Purchase: {formatCurrency(asset.purchase_price, asset.currency)}
+                      Purchase: {formatCurrency(asset.purchase_price, asset.currency, currencies)}
                     </Typography>
                   )}
                   {asset.acquisition_dt && (

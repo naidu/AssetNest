@@ -35,8 +35,11 @@ import {
   Bar,
 } from 'recharts';
 import apiService from '../services/apiService';
+import { useCurrency } from '../context/CurrencyContext';
+import { formatCurrency } from '../utils/currencyUtils';
 
 const Reports = () => {
+  const { selectedCurrency, currencies } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [period, setPeriod] = useState('6');
@@ -58,11 +61,21 @@ const Reports = () => {
           apiService.getBudgetVsActual()
         ]);
 
+        // Filter data by selected currency
+        const filteredAssetAllocation = (assetAllocationResponse.asset_allocation || [])
+          .filter(currencyGroup => currencyGroup.currency === selectedCurrency);
+        
+        const filteredExpenseAnalysis = (expenseAnalysisResponse.expense_analysis || [])
+          .filter(expense => expense.currency === selectedCurrency);
+        
+        const filteredBudgetComparison = (budgetComparisonResponse.budget_comparison || [])
+          .filter(budget => budget.currency === selectedCurrency);
+
         setReportData({
           netWorth: netWorthResponse.networth_data || [],
-          assetAllocation: assetAllocationResponse.asset_allocation || [],
-          expenseAnalysis: expenseAnalysisResponse.expense_analysis || [],
-          budgetComparison: budgetComparisonResponse.budget_comparison || []
+          assetAllocation: filteredAssetAllocation,
+          expenseAnalysis: filteredExpenseAnalysis,
+          budgetComparison: filteredBudgetComparison
         });
       } catch (err) {
         setError('Failed to load report data');
@@ -73,24 +86,11 @@ const Reports = () => {
     };
 
     fetchReportData();
-  }, [period]);
+  }, [period, selectedCurrency]);
 
   const COLORS = ['#2E7D32', '#FFC107', '#FF9800', '#F44336', '#9C27B0', '#2196F3'];
 
-  const formatCurrency = (amount, currency = 'INR') => {
-    if (!amount) return '₹0';
-    
-    const symbols = {
-      'INR': '₹',
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£'
-    };
-    
-    const symbol = symbols[currency] || currency;
-    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return `${symbol}${numericAmount.toLocaleString('en-IN')}`;
-  };
+
 
   const getTotalAssets = () => {
     return reportData.assetAllocation.reduce((sum, asset) => sum + parseFloat(asset.total_value), 0);
@@ -145,7 +145,7 @@ const Reports = () => {
                     Total Assets
                   </Typography>
                   <Typography variant="h4" component="div" color="primary">
-                    {formatCurrency(getTotalAssets())}
+                    {formatCurrency(getTotalAssets(), selectedCurrency, currencies)}
                   </Typography>
                 </Box>
                 <AccountBalance color="primary" sx={{ fontSize: 40 }} />
@@ -162,7 +162,7 @@ const Reports = () => {
                     Net Worth
                   </Typography>
                   <Typography variant="h4" component="div" color="success.main">
-                    {formatCurrency(reportData.netWorth[reportData.netWorth.length - 1]?.net_worth)}
+                    {formatCurrency(reportData.netWorth[reportData.netWorth.length - 1]?.net_worth, selectedCurrency, currencies)}
                   </Typography>
                 </Box>
                 <TrendingUp color="success" sx={{ fontSize: 40 }} />
@@ -179,7 +179,7 @@ const Reports = () => {
                     Total Expenses
                   </Typography>
                   <Typography variant="h4" component="div" color="error.main">
-                    {formatCurrency(getTotalExpenses())}
+                    {formatCurrency(getTotalExpenses(), selectedCurrency, currencies)}
                   </Typography>
                 </Box>
                 <Payment color="error" sx={{ fontSize: 40 }} />
@@ -339,7 +339,7 @@ const Reports = () => {
                         {asset.asset_type}
                       </Typography>
                       <Typography variant="h5" gutterBottom>
-                        {formatCurrency(asset.total_value)}
+                                                        {formatCurrency(asset.total_value, selectedCurrency, currencies)}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         {asset.count} {asset.count === 1 ? 'item' : 'items'} • {asset.percentage}% of portfolio

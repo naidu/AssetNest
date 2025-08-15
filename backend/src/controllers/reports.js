@@ -129,13 +129,18 @@ const getAssetAllocation = async (req, res) => {
         COUNT(a.asset_id) as count,
         COALESCE(SUM(a.current_value), 0) as total_value,
         ROUND((COALESCE(SUM(a.current_value), 0) / 
-          (SELECT SUM(current_value) FROM assets WHERE household_id = ? AND status = 'active' AND currency = a.currency)) * 100, 2) as percentage
+          NULLIF((SELECT SUM(current_value) FROM assets WHERE household_id = ? AND status = 'active' AND currency = a.currency), 0)) * 100, 2) as percentage
       FROM assets a
       JOIN asset_types at ON a.asset_type_id = at.asset_type_id
       WHERE a.household_id = ? AND a.status = 'active'
       GROUP BY a.currency, at.asset_type_id
       ORDER BY a.currency, total_value DESC
     `, [req.user.household_id, req.user.household_id]);
+
+    // If no assets found, return empty array
+    if (!allocationData || allocationData.length === 0) {
+      return res.json({ asset_allocation: [] });
+    }
 
     // Group by currency
     const groupedByCurrency = {};
@@ -148,12 +153,12 @@ const getAssetAllocation = async (req, res) => {
         };
       }
       groupedByCurrency[item.currency].assets.push({
-        asset_type: item.asset_type,
-        count: item.count,
-        total_value: item.total_value,
-        percentage: item.percentage
+        asset_type: item.asset_type || 'Unknown',
+        count: item.count || 0,
+        total_value: parseFloat(item.total_value) || 0,
+        percentage: parseFloat(item.percentage) || 0
       });
-      groupedByCurrency[item.currency].total_value += parseFloat(item.total_value);
+      groupedByCurrency[item.currency].total_value += parseFloat(item.total_value) || 0;
     });
 
     // Convert to array and sort by total value

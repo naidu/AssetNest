@@ -16,6 +16,8 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Divider,
+  Chip,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -27,8 +29,10 @@ import {
   Settings,
   AccountCircle,
   Logout,
+  CurrencyExchange,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const drawerWidth = 240;
 
@@ -47,6 +51,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { selectedCurrency, setSelectedCurrency, currencies } = useCurrency();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountMenuAnchor, setAccountMenuAnchor] = useState(null);
@@ -82,6 +87,35 @@ const Layout = () => {
           </Typography>
         </Box>
       </Toolbar>
+      
+      {/* Currency Selector */}
+      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CurrencyExchange fontSize="small" />
+          Currency
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+          {currencies.map((currency) => (
+            <Chip
+              key={currency.code}
+              label={currency.symbol}
+              size="small"
+              onClick={() => setSelectedCurrency(currency.code)}
+              sx={{
+                cursor: 'pointer',
+                backgroundColor: selectedCurrency === currency.code ? 'primary.main' : 'grey.100',
+                color: selectedCurrency === currency.code ? 'white' : 'text.primary',
+                '&:hover': {
+                  backgroundColor: selectedCurrency === currency.code ? 'primary.dark' : 'grey.200',
+                },
+                fontWeight: selectedCurrency === currency.code ? 'bold' : 'normal',
+              }}
+              title={`${currency.name} (${currency.code})`}
+            />
+          ))}
+        </Box>
+      </Box>
+
       <List>
         {menuItems.map((item) => (
           <ListItem
