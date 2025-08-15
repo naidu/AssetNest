@@ -76,7 +76,6 @@ CREATE TABLE IF NOT EXISTS assets (
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (household_id)  REFERENCES households(household_id) ON DELETE CASCADE,
     FOREIGN KEY (asset_type_id) REFERENCES asset_types(asset_type_id),
-    FOREIGN KEY (linked_account_id) REFERENCES bank_accounts(account_id) ON DELETE SET NULL,
     INDEX idx_household_id (household_id),
     INDEX idx_asset_type (asset_type_id),
     INDEX idx_status (status),
@@ -232,3 +231,8 @@ CREATE TABLE IF NOT EXISTS networth_snapshots (
     INDEX idx_snapshot_dt (snapshot_dt),
     UNIQUE KEY unique_household_date (household_id, snapshot_dt)
 );
+
+-- Add foreign key constraints that depend on tables created later
+ALTER TABLE assets 
+ADD CONSTRAINT fk_assets_linked_account 
+FOREIGN KEY (linked_account_id) REFERENCES bank_accounts(account_id) ON DELETE SET NULL;
