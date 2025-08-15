@@ -34,6 +34,7 @@ const Assets = () => {
   const { selectedCurrency, currencies } = useCurrency();
   const [assets, setAssets] = useState([]);
   const [assetTypes, setAssetTypes] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -49,6 +50,7 @@ const Assets = () => {
     current_value: '',
     purchase_price: '',
     currency: selectedCurrency,
+    account_id: '',
     notes: '',
     details: {}
   });
@@ -57,14 +59,18 @@ const Assets = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [assetsResponse, typesResponse] = await Promise.all([
+        const [assetsResponse, typesResponse, bankAccountsResponse] = await Promise.all([
           apiService.getAssets(),
-          apiService.getAssetTypes()
+          apiService.getAssetTypes(),
+          apiService.getBankAccounts()
         ]);
         // Filter assets by selected currency
         const filteredAssets = (assetsResponse.assets || []).filter(asset => asset.currency === selectedCurrency);
         setAssets(filteredAssets);
         setAssetTypes(typesResponse.asset_types || []);
+        // Filter bank accounts by selected currency
+        const filteredBankAccounts = (bankAccountsResponse.bank_accounts || []).filter(account => account.currency === selectedCurrency);
+        setBankAccounts(filteredBankAccounts);
       } catch (err) {
         setError('Failed to load assets');
         console.error('Assets fetch error:', err);
@@ -86,6 +92,7 @@ const Assets = () => {
         acquisition_dt: '',
         current_value: '',
         currency: selectedCurrency,
+        account_id: '',
         notes: '',
         details: {}
       });
@@ -108,6 +115,7 @@ const Assets = () => {
       current_value: asset.current_value,
       purchase_price: asset.purchase_price || '',
       currency: asset.currency,
+      account_id: asset.linked_account_id || '',
       notes: asset.notes || '',
       details: asset.details || {}
     });
@@ -124,7 +132,8 @@ const Assets = () => {
         display_name: '',
         acquisition_dt: '',
         current_value: '',
-        currency: 'INR',
+        currency: selectedCurrency,
+        account_id: '',
         notes: '',
         details: {}
       });
@@ -263,6 +272,11 @@ const Assets = () => {
                       Acquired: {new Date(asset.acquisition_dt).toLocaleDateString()}
                     </Typography>
                   )}
+                  {asset.linked_account_id && (
+                    <Typography variant="body2" color="textSecondary">
+                      Linked Account: {asset.bank_name} ({asset.bank_account_type})
+                    </Typography>
+                  )}
                   {asset.notes && (
                     <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
                       {asset.notes}
@@ -352,10 +366,28 @@ const Assets = () => {
                   onChange={(e) => setFormData({...formData, currency: e.target.value})}
                   label="Currency"
                 >
-                  <MenuItem value="INR">INR</MenuItem>
-                  <MenuItem value="USD">USD</MenuItem>
-                  <MenuItem value="EUR">EUR</MenuItem>
-                  <MenuItem value="GBP">GBP</MenuItem>
+                  {currencies.map((currency) => (
+                    <MenuItem key={currency.code} value={currency.code}>
+                      {currency.symbol} {currency.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
+                <InputLabel>Linked Bank Account (Optional)</InputLabel>
+                <Select
+                  value={formData.account_id}
+                  onChange={(e) => setFormData({...formData, account_id: e.target.value})}
+                  label="Linked Bank Account (Optional)"
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {bankAccounts.map((account) => (
+                    <MenuItem key={account.account_id} value={account.account_id}>
+                      {account.display_name} ({account.bank_name})
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -425,10 +457,28 @@ const Assets = () => {
                   onChange={(e) => setFormData({...formData, currency: e.target.value})}
                   label="Currency"
                 >
-                  <MenuItem value="INR">INR</MenuItem>
-                  <MenuItem value="USD">USD</MenuItem>
-                  <MenuItem value="EUR">EUR</MenuItem>
-                  <MenuItem value="GBP">GBP</MenuItem>
+                  {currencies.map((currency) => (
+                    <MenuItem key={currency.code} value={currency.code}>
+                      {currency.symbol} {currency.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
+                <InputLabel>Linked Bank Account (Optional)</InputLabel>
+                <Select
+                  value={formData.account_id}
+                  onChange={(e) => setFormData({...formData, account_id: e.target.value})}
+                  label="Linked Bank Account (Optional)"
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {bankAccounts.map((account) => (
+                    <MenuItem key={account.account_id} value={account.account_id}>
+                      {account.display_name} ({account.bank_name})
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>

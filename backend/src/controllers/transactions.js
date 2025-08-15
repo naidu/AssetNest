@@ -37,6 +37,9 @@ const getTransactions = async (req, res) => {
         t.txn_id,
         t.asset_id,
         a.display_name as asset_name,
+        t.account_id,
+        ba.bank_name as account_name,
+        ba.account_type as account_type,
         t.category_id,
         c.name as category_name,
         t.purpose,
@@ -48,6 +51,7 @@ const getTransactions = async (req, res) => {
         u.name as user_name
       FROM transactions t
       LEFT JOIN assets a ON t.asset_id = a.asset_id
+      LEFT JOIN bank_accounts ba ON t.account_id = ba.account_id
       LEFT JOIN txn_categories c ON t.category_id = c.category_id
       LEFT JOIN users u ON t.user_id = u.user_id
       ${whereClause}
@@ -79,16 +83,17 @@ const getTransactions = async (req, res) => {
 };
 
 const createTransaction = async (req, res) => {
-  const { asset_id, category_id, purpose, txn_type, amount, currency, txn_date, notes } = req.body;
+  const { asset_id, account_id, category_id, purpose, txn_type, amount, currency, txn_date, notes } = req.body;
   const pool = getPool();
 
   try {
     const [result] = await pool.execute(
-      'INSERT INTO transactions (household_id, user_id, asset_id, category_id, purpose, txn_type, amount, currency, txn_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO transactions (household_id, user_id, asset_id, account_id, category_id, purpose, txn_type, amount, currency, txn_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         req.user.household_id, 
         req.user.user_id, 
         asset_id || null, 
+        account_id || null, 
         category_id, 
         purpose || null, 
         txn_type, 

@@ -13,6 +13,7 @@ const transactionsRoutes = require('./routes/transactions');
 const budgetsRoutes = require('./routes/budgets');
 const reportsRoutes = require('./routes/reports');
 const householdsRoutes = require('./routes/households');
+const bankAccountsRoutes = require('./routes/bankAccounts');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -86,6 +87,7 @@ app.use('/api/transactions', transactionsRoutes);
 app.use('/api/budgets', budgetsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/households', householdsRoutes);
+app.use('/api/bank-accounts', bankAccountsRoutes);
 
 // Root endpoint
 app.get('/api', (req, res) => {

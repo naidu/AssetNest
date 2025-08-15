@@ -69,15 +69,18 @@ CREATE TABLE IF NOT EXISTS assets (
     acquisition_dt  DATE,
     current_value   DECIMAL(18,2),
     currency        CHAR(3) DEFAULT 'INR',
+    linked_account_id BIGINT UNSIGNED,
     notes           TEXT,
     status          ENUM('active','sold','closed') DEFAULT 'active',
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (household_id)  REFERENCES households(household_id) ON DELETE CASCADE,
     FOREIGN KEY (asset_type_id) REFERENCES asset_types(asset_type_id),
+    FOREIGN KEY (linked_account_id) REFERENCES bank_accounts(account_id) ON DELETE SET NULL,
     INDEX idx_household_id (household_id),
     INDEX idx_asset_type (asset_type_id),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_linked_account (linked_account_id)
 );
 
 -- 4. PROPERTY DETAILS
@@ -146,12 +149,35 @@ CREATE TABLE IF NOT EXISTS insurance_policies (
     INDEX idx_policy_number (policy_number)
 );
 
--- 9. CASHFLOW TRANSACTIONS
+-- 9. BANK ACCOUNTS
+CREATE TABLE IF NOT EXISTS bank_accounts (
+    account_id     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    asset_id       BIGINT UNSIGNED NOT NULL,
+    bank_name      VARCHAR(100) NOT NULL,
+    account_type   ENUM('savings','current','credit','loan','investment') NOT NULL,
+    account_number VARCHAR(50),
+    ifsc_code      VARCHAR(20),
+    branch_name    VARCHAR(100),
+    opening_balance DECIMAL(18,2) DEFAULT 0.00,
+    current_balance DECIMAL(18,2) DEFAULT 0.00,
+    currency       CHAR(3) DEFAULT 'INR',
+    is_active      BOOLEAN DEFAULT TRUE,
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (asset_id) REFERENCES assets(asset_id) ON DELETE CASCADE,
+    INDEX idx_asset_id (asset_id),
+    INDEX idx_bank_name (bank_name),
+    INDEX idx_account_type (account_type),
+    INDEX idx_is_active (is_active)
+);
+
+-- 10. CASHFLOW TRANSACTIONS
 CREATE TABLE IF NOT EXISTS transactions (
     txn_id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     household_id   INT UNSIGNED NOT NULL,
     user_id        INT UNSIGNED,
     asset_id       BIGINT UNSIGNED,      -- nullable for pure income/expense
+    account_id     BIGINT UNSIGNED,      -- nullable for cash transactions
     category_id    SMALLINT UNSIGNED NOT NULL,
     purpose        VARCHAR(160),
     txn_type       ENUM('income','expense','transfer') NOT NULL,
@@ -164,16 +190,18 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (household_id) REFERENCES households(household_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id)      REFERENCES users(user_id) ON DELETE SET NULL,
     FOREIGN KEY (asset_id)     REFERENCES assets(asset_id) ON DELETE SET NULL,
+    FOREIGN KEY (account_id)   REFERENCES bank_accounts(account_id) ON DELETE SET NULL,
     FOREIGN KEY (category_id)  REFERENCES txn_categories(category_id),
     INDEX idx_household_id (household_id),
     INDEX idx_user_id (user_id),
     INDEX idx_asset_id (asset_id),
+    INDEX idx_account_id (account_id),
     INDEX idx_category_id (category_id),
     INDEX idx_txn_date (txn_date),
     INDEX idx_txn_type (txn_type)
 );
 
--- 10. BUDGETS
+-- 11. BUDGETS
 CREATE TABLE IF NOT EXISTS budgets (
     budget_id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     household_id   INT UNSIGNED NOT NULL,
@@ -190,7 +218,7 @@ CREATE TABLE IF NOT EXISTS budgets (
     INDEX idx_period (period_start, period_end)
 );
 
--- 11. NET-WORTH TRACKING
+-- 12. NET-WORTH TRACKING
 CREATE TABLE IF NOT EXISTS networth_snapshots (
     snapshot_id    BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     household_id   INT UNSIGNED NOT NULL,

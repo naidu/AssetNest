@@ -14,9 +14,14 @@ const getAssets = async (req, res) => {
         a.current_value,
         a.currency,
         a.notes,
-        a.status
+        a.status,
+        a.linked_account_id,
+        ba.account_id,
+        ba.bank_name,
+        ba.account_type as bank_account_type
       FROM assets a
       JOIN asset_types at ON a.asset_type_id = at.asset_type_id
+      LEFT JOIN bank_accounts ba ON a.asset_id = ba.asset_id
       WHERE a.household_id = ?
       ORDER BY a.display_name
     `, [req.user.household_id]);
@@ -137,7 +142,7 @@ const getAssetById = async (req, res) => {
 };
 
 const createAsset = async (req, res) => {
-  const { asset_type_id, display_name, acquisition_dt, current_value, currency, notes, details } = req.body;
+  const { asset_type_id, display_name, acquisition_dt, current_value, currency, notes, details, account_id } = req.body;
   const pool = getPool();
 
   try {
@@ -150,7 +155,7 @@ const createAsset = async (req, res) => {
 
       // Create main asset record - handle undefined values
       const [assetResult] = await connection.execute(
-        'INSERT INTO assets (household_id, asset_type_id, display_name, acquisition_dt, current_value, currency, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO assets (household_id, asset_type_id, display_name, acquisition_dt, current_value, currency, linked_account_id, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [
           req.user.household_id, 
           asset_type_id, 
@@ -158,6 +163,7 @@ const createAsset = async (req, res) => {
           acquisition_dt || null, 
           processedCurrentValue,
           currency || 'INR', 
+          account_id || null,
           notes || null
         ]
       );
@@ -279,7 +285,7 @@ const createAsset = async (req, res) => {
 
 const updateAsset = async (req, res) => {
   const { id } = req.params;
-  const { display_name, current_value, currency, notes, details } = req.body;
+  const { display_name, current_value, currency, notes, details, account_id } = req.body;
   const pool = getPool();
 
   try {
@@ -306,8 +312,8 @@ const updateAsset = async (req, res) => {
 
       // Update main asset record
       await connection.execute(
-        'UPDATE assets SET display_name = ?, current_value = ?, currency = ?, notes = ? WHERE asset_id = ?',
-        [display_name, processedCurrentValue, currency, notes, id]
+        'UPDATE assets SET display_name = ?, current_value = ?, currency = ?, linked_account_id = ?, notes = ? WHERE asset_id = ?',
+        [display_name, processedCurrentValue, currency, account_id || null, notes, id]
       );
 
       // Record changes in history
@@ -327,6 +333,10 @@ const updateAsset = async (req, res) => {
 
       if (currentAsset.notes !== notes) {
         changes.push(['notes', currentAsset.notes, notes, 'Notes updated']);
+      }
+
+      if (currentAsset.linked_account_id !== (account_id || null)) {
+        changes.push(['linked_account_id', currentAsset.linked_account_id, account_id || null, 'Linked account updated']);
       }
 
       // Insert history records for each change

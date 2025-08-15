@@ -23,6 +23,7 @@ import {
   Menu as MenuIcon,
   Dashboard,
   AccountBalance,
+  AccountBalanceWallet,
   Payment,
   TrendingUp,
   Assessment,
@@ -39,6 +40,7 @@ const drawerWidth = 240;
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/app/dashboard' },
   { text: 'Assets', icon: <AccountBalance />, path: '/app/assets' },
+  { text: 'Bank Accounts', icon: <AccountBalanceWallet />, path: '/app/bank-accounts' },
   { text: 'Transactions', icon: <Payment />, path: '/app/transactions' },
   { text: 'Budgets', icon: <TrendingUp />, path: '/app/budgets' },
   { text: 'Reports', icon: <Assessment />, path: '/app/reports' },

@@ -6,7 +6,8 @@ INSERT IGNORE INTO asset_types (asset_type_id, type_name) VALUES
 (2, 'Stock'),
 (3, 'Gold'),
 (4, 'Mutual Fund'),
-(5, 'Insurance');
+(5, 'Insurance'),
+(6, 'Bank Account');
 
 -- Insert Default Transaction Categories (Global)
 INSERT IGNORE INTO txn_categories (category_id, household_id, name, txn_kind, parent_id) VALUES
@@ -56,7 +57,10 @@ INSERT IGNORE INTO assets (asset_id, household_id, asset_type_id, display_name, 
 (4, 1, 3, 'Gold Jewelry', '2019-12-25', 150000.00, 'INR', 'Traditional gold jewelry'),
 (5, 1, 5, 'Term Life Insurance', '2020-05-01', 500000.00, 'INR', 'Term insurance policy'),
 (6, 1, 2, 'Apple Inc. Shares', '2022-01-15', 50000.00, 'EUR', '50 shares of Apple Inc.'),
-(7, 1, 1, 'European Property', '2021-06-01', 250000.00, 'EUR', 'Investment property in Germany');
+(7, 1, 1, 'European Property', '2021-06-01', 250000.00, 'EUR', 'Investment property in Germany'),
+(8, 1, 6, 'HDFC Savings Account', '2020-01-01', 50000.00, 'INR', 'Primary savings account'),
+(9, 1, 6, 'SBI Current Account', '2020-02-01', 100000.00, 'INR', 'Business current account'),
+(10, 1, 6, 'Deutsche Bank Account', '2021-06-01', 15000.00, 'EUR', 'European bank account');
 
 -- Asset Details
 INSERT IGNORE INTO property_assets (asset_id, property_kind, ownership_mode, address_line1, city, state, country, postcode, area_sqft, purchase_price, purchase_dt) VALUES
@@ -74,26 +78,32 @@ INSERT IGNORE INTO gold_assets (asset_id, gold_form, weight_grams, purity_percen
 INSERT IGNORE INTO insurance_policies (asset_id, policy_number, provider, policy_type, sum_assured, premium_amount, premium_freq, start_date, end_date, nominee) VALUES
 (5, 'LIC789012', 'LIC of India', 'life', 5000000.00, 25000.00, 'yearly', '2020-05-01', '2040-05-01', 'Spouse');
 
+-- Bank Account Details
+INSERT IGNORE INTO bank_accounts (account_id, asset_id, bank_name, account_type, account_number, ifsc_code, branch_name, opening_balance, current_balance, currency, is_active) VALUES
+(1, 8, 'HDFC Bank', 'savings', '1234567890', 'HDFC0001234', 'Mumbai Main Branch', 50000.00, 50000.00, 'INR', TRUE),
+(2, 9, 'State Bank of India', 'current', '0987654321', 'SBIN0001234', 'Mumbai Business Branch', 100000.00, 100000.00, 'INR', TRUE),
+(3, 10, 'Deutsche Bank', 'savings', 'DE123456789', 'DEUTDEFF123', 'Berlin Main Branch', 15000.00, 15000.00, 'EUR', TRUE);
+
 -- Sample Transactions
-INSERT IGNORE INTO transactions (txn_id, household_id, user_id, asset_id, category_id, purpose, txn_type, amount, currency, txn_date, notes) VALUES
+INSERT IGNORE INTO transactions (txn_id, household_id, user_id, asset_id, account_id, category_id, purpose, txn_type, amount, currency, txn_date, notes) VALUES
 -- Historical transactions (January 2024)
-(1, 1, 1, NULL, 1, 'Monthly Salary', 'income', 80000.00, 'INR', '2024-01-01', 'January salary'),
-(2, 1, 1, NULL, 10, 'Grocery Shopping', 'expense', 5000.00, 'INR', '2024-01-02', 'Monthly groceries'),
-(3, 1, 1, 3, 19, 'SIP Investment', 'expense', 10000.00, 'INR', '2024-01-05', 'Monthly SIP'),
-(4, 1, 1, NULL, 12, 'Electricity Bill', 'expense', 3500.00, 'INR', '2024-01-10', 'Monthly electricity'),
-(5, 1, 1, NULL, 15, 'Movie Tickets', 'expense', 800.00, 'INR', '2024-01-15', 'Family movie night'),
+(1, 1, 1, NULL, 1, 1, 'Monthly Salary', 'income', 80000.00, 'INR', '2024-01-01', 'January salary'),
+(2, 1, 1, NULL, 1, 10, 'Grocery Shopping', 'expense', 5000.00, 'INR', '2024-01-02', 'Monthly groceries'),
+(3, 1, 1, 3, 1, 19, 'SIP Investment', 'expense', 10000.00, 'INR', '2024-01-05', 'Monthly SIP'),
+(4, 1, 1, NULL, 1, 12, 'Electricity Bill', 'expense', 3500.00, 'INR', '2024-01-10', 'Monthly electricity'),
+(5, 1, 1, NULL, NULL, 15, 'Movie Tickets', 'expense', 800.00, 'INR', '2024-01-15', 'Family movie night - Cash'),
 -- Current month transactions (August 2025)
-(6, 1, 1, NULL, 1, 'Monthly Salary', 'income', 85000.00, 'INR', '2025-08-01', 'August salary'),
-(7, 1, 1, NULL, 10, 'Grocery Shopping', 'expense', 5500.00, 'INR', '2025-08-03', 'Monthly groceries'),
-(8, 1, 1, 3, 19, 'SIP Investment', 'expense', 12000.00, 'INR', '2025-08-05', 'Monthly SIP'),
-(9, 1, 1, NULL, 12, 'Electricity Bill', 'expense', 3800.00, 'INR', '2025-08-10', 'Monthly electricity'),
-(10, 1, 1, NULL, 15, 'Movie Tickets', 'expense', 1000.00, 'INR', '2025-08-12', 'Family movie night'),
-(11, 1, 1, NULL, 11, 'Fuel', 'expense', 2500.00, 'INR', '2025-08-08', 'Car fuel'),
-(12, 1, 1, NULL, 16, 'Shopping', 'expense', 3000.00, 'INR', '2025-08-14', 'Clothing purchase'),
+(6, 1, 1, NULL, 1, 1, 'Monthly Salary', 'income', 85000.00, 'INR', '2025-08-01', 'August salary'),
+(7, 1, 1, NULL, 1, 10, 'Grocery Shopping', 'expense', 5500.00, 'INR', '2025-08-03', 'Monthly groceries'),
+(8, 1, 1, 3, 1, 19, 'SIP Investment', 'expense', 12000.00, 'INR', '2025-08-05', 'Monthly SIP'),
+(9, 1, 1, NULL, 2, 12, 'Electricity Bill', 'expense', 3800.00, 'INR', '2025-08-10', 'Monthly electricity'),
+(10, 1, 1, NULL, NULL, 15, 'Movie Tickets', 'expense', 1000.00, 'INR', '2025-08-12', 'Family movie night - Cash'),
+(11, 1, 1, NULL, 1, 11, 'Fuel', 'expense', 2500.00, 'INR', '2025-08-08', 'Car fuel'),
+(12, 1, 1, NULL, 1, 16, 'Shopping', 'expense', 3000.00, 'INR', '2025-08-14', 'Clothing purchase'),
 -- EUR transactions for testing multi-currency
-(13, 1, 1, NULL, 1, 'European Salary', 'income', 5000.00, 'EUR', '2025-08-01', 'European job salary'),
-(14, 1, 1, NULL, 10, 'European Groceries', 'expense', 150.00, 'EUR', '2025-08-05', 'European groceries'),
-(15, 1, 1, NULL, 12, 'European Utilities', 'expense', 200.00, 'EUR', '2025-08-10', 'European utilities');
+(13, 1, 1, NULL, 3, 1, 'European Salary', 'income', 5000.00, 'EUR', '2025-08-01', 'European job salary'),
+(14, 1, 1, NULL, 3, 10, 'European Groceries', 'expense', 150.00, 'EUR', '2025-08-05', 'European groceries'),
+(15, 1, 1, NULL, 3, 12, 'European Utilities', 'expense', 200.00, 'EUR', '2025-08-10', 'European utilities');
 
 -- Sample Budgets
 INSERT IGNORE INTO budgets (budget_id, household_id, category_id, period_start, period_end, planned_amount) VALUES

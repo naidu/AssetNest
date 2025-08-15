@@ -96,6 +96,35 @@ class ApiService {
     return await this.api.get('/transactions/categories');
   }
 
+  // Bank Accounts
+  async getBankAccounts() {
+    return await this.api.get('/bank-accounts');
+  }
+
+  async getBankAccount(id) {
+    return await this.api.get(`/bank-accounts/${id}`);
+  }
+
+  async createBankAccount(accountData) {
+    return await this.api.post('/bank-accounts', accountData);
+  }
+
+  async updateBankAccount(id, accountData) {
+    return await this.api.put(`/bank-accounts/${id}`, accountData);
+  }
+
+  async deleteBankAccount(id) {
+    return await this.api.delete(`/bank-accounts/${id}`);
+  }
+
+  async getBankAccountBalance(id) {
+    return await this.api.get(`/bank-accounts/${id}/balance`);
+  }
+
+  async updateBankAccountBalance(id, balanceData) {
+    return await this.api.put(`/bank-accounts/${id}/balance`, balanceData);
+  }
+
   // Budgets
   async getBudgets(params = {}) {
     return await this.api.get('/budgets', { params });

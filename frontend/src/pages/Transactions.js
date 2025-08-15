@@ -34,11 +34,13 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [assets, setAssets] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [openAddModal, setOpenAddModal] = useState(false);
   const [formData, setFormData] = useState({
     asset_id: '',
+    account_id: '',
     category_id: '',
     purpose: '',
     txn_type: 'expense',
@@ -52,16 +54,20 @@ const Transactions = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [transactionsResponse, categoriesResponse, assetsResponse] = await Promise.all([
+        const [transactionsResponse, categoriesResponse, assetsResponse, bankAccountsResponse] = await Promise.all([
           apiService.getTransactions({ limit: 50 }),
           apiService.getCategories(),
-          apiService.getAssets()
+          apiService.getAssets(),
+          apiService.getBankAccounts()
         ]);
         // Filter transactions by selected currency
         const filteredTransactions = (transactionsResponse.transactions || []).filter(transaction => transaction.currency === selectedCurrency);
         setTransactions(filteredTransactions);
         setCategories(categoriesResponse.categories || []);
         setAssets(assetsResponse.assets || []);
+        // Filter bank accounts by selected currency
+        const filteredBankAccounts = (bankAccountsResponse.bank_accounts || []).filter(account => account.currency === selectedCurrency);
+        setBankAccounts(filteredBankAccounts);
       } catch (err) {
         setError('Failed to load transactions');
         console.error('Transactions fetch error:', err);
@@ -79,6 +85,7 @@ const Transactions = () => {
       setOpenAddModal(false);
       setFormData({
         asset_id: '',
+        account_id: '',
         category_id: '',
         purpose: '',
         txn_type: 'expense',
@@ -145,6 +152,7 @@ const Transactions = () => {
                 <TableCell>Date</TableCell>
                 <TableCell>Purpose</TableCell>
                 <TableCell>Category</TableCell>
+                <TableCell>Account</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell align="right">Amount</TableCell>
               </TableRow>
@@ -157,6 +165,23 @@ const Transactions = () => {
                   </TableCell>
                   <TableCell>{transaction.purpose || '-'}</TableCell>
                   <TableCell>{transaction.category_name}</TableCell>
+                  <TableCell>
+                    {transaction.account_name ? (
+                      <Chip 
+                        label={`${transaction.account_name} (${transaction.account_type})`} 
+                        color="primary" 
+                        size="small" 
+                        variant="outlined"
+                      />
+                    ) : (
+                      <Chip 
+                        label="Cash" 
+                        color="default" 
+                        size="small" 
+                        variant="outlined"
+                      />
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Chip 
                       label={transaction.txn_type} 
@@ -243,6 +268,23 @@ const Transactions = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
+                <InputLabel>Bank Account</InputLabel>
+                <Select
+                  value={formData.account_id}
+                  onChange={(e) => setFormData({...formData, account_id: e.target.value})}
+                  label="Bank Account"
+                >
+                  <MenuItem value="">Cash</MenuItem>
+                  {bankAccounts.map((account) => (
+                    <MenuItem key={account.account_id} value={account.account_id}>
+                      {account.display_name} ({account.bank_name})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
                 <InputLabel>Related Asset (Optional)</InputLabel>
                 <Select
                   value={formData.asset_id}
@@ -286,9 +328,11 @@ const Transactions = () => {
                   onChange={(e) => setFormData({...formData, currency: e.target.value})}
                   label="Currency"
                 >
-                  <MenuItem value="INR">INR</MenuItem>
-                  <MenuItem value="USD">USD</MenuItem>
-                  <MenuItem value="EUR">EUR</MenuItem>
+                  {currencies.map((currency) => (
+                    <MenuItem key={currency.code} value={currency.code}>
+                      {currency.symbol} {currency.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>

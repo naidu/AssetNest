@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Assets from './pages/Assets';
+import BankAccounts from './pages/BankAccounts';
 import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Reports from './pages/Reports';
@@ -102,12 +103,13 @@ function App() {
                   </ProtectedRoute>
                 }>
                   <Route index element={<Navigate to="/app/dashboard" replace />} />
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="assets" element={<Assets />} />
-                  <Route path="transactions" element={<Transactions />} />
-                  <Route path="budgets" element={<Budgets />} />
-                  <Route path="reports" element={<Reports />} />
-                  <Route path="settings" element={<Settings />} />
+                                  <Route path="dashboard" element={<Dashboard />} />
+                <Route path="assets" element={<Assets />} />
+                <Route path="bank-accounts" element={<BankAccounts />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route path="budgets" element={<Budgets />} />
+                <Route path="reports" element={<Reports />} />
+                <Route path="settings" element={<Settings />} />
                 </Route>
 
                 {/* Catch all route */}
