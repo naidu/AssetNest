@@ -1,7 +1,9 @@
-const db = require('../config/database');
+const { getPool } = require('../config/database');
 
 // Get all bank accounts for a household
 const getBankAccounts = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { household_id } = req.user;
     
@@ -28,7 +30,7 @@ const getBankAccounts = async (req, res) => {
       ORDER BY ba.bank_name, ba.account_type
     `;
     
-    const [accounts] = await db.execute(query, [household_id]);
+    const [accounts] = await pool.execute(query, [household_id]);
     
     res.json({ bank_accounts: accounts });
   } catch (error) {
@@ -39,6 +41,8 @@ const getBankAccounts = async (req, res) => {
 
 // Get a specific bank account
 const getBankAccount = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { account_id } = req.params;
     const { household_id } = req.user;
@@ -65,7 +69,7 @@ const getBankAccount = async (req, res) => {
       WHERE ba.account_id = ? AND a.household_id = ?
     `;
     
-    const [accounts] = await db.execute(query, [account_id, household_id]);
+    const [accounts] = await pool.execute(query, [account_id, household_id]);
     
     if (accounts.length === 0) {
       return res.status(404).json({ error: 'Bank account not found' });
@@ -80,6 +84,8 @@ const getBankAccount = async (req, res) => {
 
 // Create a new bank account
 const createBankAccount = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { household_id, user_id } = req.user;
     const {
@@ -100,7 +106,7 @@ const createBankAccount = async (req, res) => {
     }
     
     // Start transaction
-    const connection = await db.getConnection();
+    const connection = await pool.getConnection();
     await connection.beginTransaction();
     
     try {
@@ -163,7 +169,7 @@ const createBankAccount = async (req, res) => {
         WHERE ba.account_id = ?
       `;
       
-      const [accounts] = await db.execute(fetchQuery, [bankAccountResult.insertId]);
+      const [accounts] = await pool.execute(fetchQuery, [bankAccountResult.insertId]);
       
       res.status(201).json({ 
         message: 'Bank account created successfully',
@@ -185,6 +191,8 @@ const createBankAccount = async (req, res) => {
 
 // Update a bank account
 const updateBankAccount = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { account_id } = req.params;
     const { household_id } = req.user;
@@ -209,7 +217,7 @@ const updateBankAccount = async (req, res) => {
       WHERE ba.account_id = ? AND a.household_id = ?
     `;
     
-    const [accounts] = await db.execute(checkQuery, [account_id, household_id]);
+    const [accounts] = await pool.execute(checkQuery, [account_id, household_id]);
     
     if (accounts.length === 0) {
       return res.status(404).json({ error: 'Bank account not found' });
@@ -218,7 +226,7 @@ const updateBankAccount = async (req, res) => {
     const { asset_id } = accounts[0];
     
     // Start transaction
-    const connection = await db.getConnection();
+    const connection = await pool.getConnection();
     await connection.beginTransaction();
     
     try {
@@ -288,7 +296,7 @@ const updateBankAccount = async (req, res) => {
         WHERE ba.account_id = ?
       `;
       
-      const [updatedAccounts] = await db.execute(fetchQuery, [account_id]);
+      const [updatedAccounts] = await pool.execute(fetchQuery, [account_id]);
       
       res.json({ 
         message: 'Bank account updated successfully',
@@ -310,6 +318,8 @@ const updateBankAccount = async (req, res) => {
 
 // Delete a bank account
 const deleteBankAccount = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { account_id } = req.params;
     const { household_id } = req.user;
@@ -322,7 +332,7 @@ const deleteBankAccount = async (req, res) => {
       WHERE ba.account_id = ? AND a.household_id = ?
     `;
     
-    const [accounts] = await db.execute(checkQuery, [account_id, household_id]);
+    const [accounts] = await pool.execute(checkQuery, [account_id, household_id]);
     
     if (accounts.length === 0) {
       return res.status(404).json({ error: 'Bank account not found' });
@@ -344,7 +354,7 @@ const deleteBankAccount = async (req, res) => {
       WHERE account_id = ?
     `;
     
-    const [transactionResult] = await db.execute(transactionCheckQuery, [account_id]);
+    const [transactionResult] = await pool.execute(transactionCheckQuery, [account_id]);
     
     if (transactionResult[0].transaction_count > 0) {
       return res.status(400).json({ 
@@ -353,7 +363,7 @@ const deleteBankAccount = async (req, res) => {
     }
     
     // Start transaction
-    const connection = await db.getConnection();
+    const connection = await pool.getConnection();
     await connection.beginTransaction();
     
     try {
@@ -382,6 +392,8 @@ const deleteBankAccount = async (req, res) => {
 
 // Get account balance and transaction summary
 const getAccountBalance = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { account_id } = req.params;
     const { household_id } = req.user;
@@ -394,7 +406,7 @@ const getAccountBalance = async (req, res) => {
       WHERE ba.account_id = ? AND a.household_id = ?
     `;
     
-    const [accounts] = await db.execute(checkQuery, [account_id, household_id]);
+    const [accounts] = await pool.execute(checkQuery, [account_id, household_id]);
     
     if (accounts.length === 0) {
       return res.status(404).json({ error: 'Bank account not found' });
@@ -418,7 +430,7 @@ const getAccountBalance = async (req, res) => {
       LIMIT 10
     `;
     
-    const [transactions] = await db.execute(transactionsQuery, [account_id]);
+    const [transactions] = await pool.execute(transactionsQuery, [account_id]);
     
     // Calculate summary
     const summaryQuery = `
@@ -431,7 +443,7 @@ const getAccountBalance = async (req, res) => {
       WHERE account_id = ?
     `;
     
-    const [summary] = await db.execute(summaryQuery, [account_id]);
+    const [summary] = await pool.execute(summaryQuery, [account_id]);
     
     res.json({
       account_balance: accounts[0],
@@ -447,6 +459,8 @@ const getAccountBalance = async (req, res) => {
 
 // Update account balance (for reconciliation)
 const updateAccountBalance = async (req, res) => {
+  const pool = getPool();
+  
   try {
     const { account_id } = req.params;
     const { household_id } = req.user;
@@ -464,7 +478,7 @@ const updateAccountBalance = async (req, res) => {
       WHERE ba.account_id = ? AND a.household_id = ?
     `;
     
-    const [accounts] = await db.execute(checkQuery, [account_id, household_id]);
+    const [accounts] = await pool.execute(checkQuery, [account_id, household_id]);
     
     if (accounts.length === 0) {
       return res.status(404).json({ error: 'Bank account not found' });
@@ -477,7 +491,7 @@ const updateAccountBalance = async (req, res) => {
       WHERE account_id = ?
     `;
     
-    await db.execute(updateQuery, [current_balance, account_id]);
+    await pool.execute(updateQuery, [current_balance, account_id]);
     
     // Also update the asset value
     const assetUpdateQuery = `
@@ -487,7 +501,7 @@ const updateAccountBalance = async (req, res) => {
       WHERE ba.account_id = ?
     `;
     
-    await db.execute(assetUpdateQuery, [current_balance, account_id]);
+    await pool.execute(assetUpdateQuery, [current_balance, account_id]);
     
     res.json({ 
       message: 'Account balance updated successfully',
