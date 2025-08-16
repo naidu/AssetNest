@@ -6,10 +6,13 @@ A comprehensive asset management system built with React frontend and Node.js ba
 
 - **User Authentication**: Secure registration and login system
 - **Asset Management**: Track various types of assets (properties, vehicles, investments, etc.)
+- **Bank Account Management**: Link transactions and assets to bank accounts
+- **Multi-Currency Support**: Dynamic currency management with custom currencies
 - **Budget Planning**: Create and manage household budgets
-- **Transaction Tracking**: Monitor income and expenses
+- **Transaction Tracking**: Monitor income and expenses with bank account linking
 - **Reporting**: Generate comprehensive financial reports
 - **Multi-User Support**: Household-based user management
+- **Production Ready**: Optimized for Nginx Proxy Manager deployment
 
 ## Quick Start
 
@@ -46,6 +49,29 @@ A comprehensive asset management system built with React frontend and Node.js ba
    - Frontend: http://localhost:4000 (Landing page and application)
    - Backend API: http://localhost:8000/api/health (Health check)
    - Database: MySQL running in container
+
+### Production Deployment
+
+For production deployment with Nginx Proxy Manager:
+
+1. **Deploy containers** (no external ports exposed)
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Configure Nginx Proxy Manager**
+   - Domain: `your-domain.com`
+   - Forward to: `http://frontend:80`
+   - Enable SSL and security features
+
+3. **Run production tests**
+   ```bash
+   ./scripts/test-production.sh
+   ```
+
+4. **Access application**
+   - URL: `https://your-domain.com`
+   - Login: `admin@demo.com` / `password`
 
 ## Demo Access
 
