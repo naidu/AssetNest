@@ -35,10 +35,9 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:4000,https://assetnest.btrnaidu.com,https://www.assetnest.btrnaidu.com}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://assetnest.btrnaidu.com,https://www.assetnest.btrnaidu.com}
       PORT: 8000
-    ports:
-      - "8000:8000"
+    # No ports exposed - accessed only through internal Docker network
     depends_on:
       mysql:
         condition: service_healthy
@@ -56,11 +55,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:8000/api}
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-https://assetnest.btrnaidu.com/api}
     container_name: assetnest-frontend
     restart: unless-stopped
-    ports:
-      - "4000:80"
+    # No ports exposed - accessed only through Nginx Proxy Manager
     depends_on:
       - backend
     networks:

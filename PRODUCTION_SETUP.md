@@ -3,6 +3,22 @@
 ## Overview
 This guide explains how to properly configure AssetNest behind Nginx Proxy Manager to resolve API routing issues.
 
+## Architecture
+
+```
+Internet → Nginx Proxy Manager → Frontend Container (nginx) → Backend Container
+                                    ↓
+                              React App (served by nginx)
+                                    ↓
+                              API calls proxied to backend
+```
+
+**Key Points:**
+- **No external ports exposed** - All access through Nginx Proxy Manager
+- **Internal communication** - Frontend nginx proxies API calls to backend
+- **Network isolation** - Services communicate only through Docker network
+- **Security** - No direct access to backend or database from outside
+
 ## Problem
 When running AssetNest behind Nginx Proxy Manager, you may encounter:
 - `405 Method Not Allowed` errors on API calls
@@ -61,12 +77,15 @@ REACT_APP_API_URL=https://assetnest.btrnaidu.com/api
 
 ### 4. Docker Compose Production Setup
 
+**Important**: The production configuration does NOT expose ports externally. All access is through Nginx Proxy Manager.
+
 ```yaml
 version: '3.8'
 services:
   frontend:
     build: ./frontend
     container_name: assetnest-frontend
+    # No ports exposed - accessed only through Nginx Proxy Manager
     networks:
       - assetnest-network
     depends_on:
@@ -75,6 +94,7 @@ services:
   backend:
     build: ./backend
     container_name: assetnest-backend
+    # No ports exposed - accessed only through internal Docker network
     environment:
       - NODE_ENV=production
       - ALLOWED_ORIGINS=https://assetnest.btrnaidu.com,https://www.assetnest.btrnaidu.com
@@ -86,6 +106,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: assetnest-mysql
+    # No ports exposed - accessed only through internal Docker network
     environment:
       MYSQL_ROOT_PASSWORD: your_root_password
       MYSQL_DATABASE: assetnest
@@ -167,6 +188,8 @@ curl -X POST https://assetnest.btrnaidu.com/api/auth/login \
 2. **Rate Limiting**: Already configured in the backend
 3. **CORS**: Properly configured for your domain
 4. **Headers**: Security headers are set in nginx configuration
+5. **Port Security**: No external ports exposed - all access through Nginx Proxy Manager
+6. **Network Isolation**: Services communicate only through internal Docker network
 
 ## Performance Optimization
 
