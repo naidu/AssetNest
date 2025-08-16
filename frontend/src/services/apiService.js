@@ -8,7 +8,8 @@ const getApiUrl = () => {
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://localhost:8000/api';  // Local development
   } else {
-    // For production, use the same domain as the frontend without port
+    // For production, use the same domain as the frontend
+    // The nginx proxy will handle routing /api requests to the backend
     return `${protocol}//${hostname}/api`;
   }
 };
