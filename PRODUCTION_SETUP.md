@@ -19,6 +19,26 @@ Internet → Nginx Proxy Manager → Frontend Container (nginx) → Backend Cont
 - **Network isolation** - Services communicate only through Docker network
 - **Security** - No direct access to backend or database from outside
 
+### How Internal Communication Works
+
+Even without external port exposure, containers can communicate internally:
+
+```bash
+# This works because containers are in the same Docker network
+docker exec -it assetnest-frontend curl http://backend:8000/api/health
+
+# Docker automatically resolves 'backend' to the container's internal IP
+# Backend container: 172.20.0.3:8000
+# Frontend container: 172.20.0.4:80
+# MySQL container: 172.20.0.2:3306
+```
+
+**Why this works:**
+- **Docker DNS**: Container names resolve to internal IPs
+- **Internal ports**: Port 8000 is still listening inside the backend container
+- **Network isolation**: Only containers in the same network can communicate
+- **No external exposure**: Host machine cannot directly access these ports
+
 ## Problem
 When running AssetNest behind Nginx Proxy Manager, you may encounter:
 - `405 Method Not Allowed` errors on API calls
@@ -64,16 +84,31 @@ If you prefer separate domains:
 
 ### 3. Environment Variables
 
-Set these environment variables in your production environment:
+Create a `.env` file in your project root with these variables:
 
 ```bash
-# Backend
-NODE_ENV=production
+# Database Configuration
+DB_ROOT_PASSWORD=your_secure_root_password
+DB_NAME=assetnest
+DB_USER=assetnest_user
+DB_PASSWORD=your_secure_db_password
+
+# JWT Secret (generate a secure random string)
+JWT_SECRET=your_very_long_secure_jwt_secret_key_here
+
+# CORS Allowed Origins (comma-separated)
+# For production, only include your actual domains
 ALLOWED_ORIGINS=https://assetnest.btrnaidu.com,https://www.assetnest.btrnaidu.com
 
-# Frontend
+# Frontend API URL
+# For production with Nginx Proxy Manager, use your domain
 REACT_APP_API_URL=https://assetnest.btrnaidu.com/api
 ```
+
+**Important Notes:**
+- **REACT_APP_API_URL**: Must use your production domain, NOT localhost
+- **ALLOWED_ORIGINS**: Only include your actual production domains
+- **Never commit .env file**: It contains sensitive information
 
 ### 4. Docker Compose Production Setup
 
