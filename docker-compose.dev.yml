@@ -7,10 +7,10 @@ services:
     container_name: assetnest-mysql-dev
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: assetnest_root_password
+      MYSQL_DATABASE: assetnest
+      MYSQL_USER: assetnest_user
+      MYSQL_PASSWORD: assetnest_password
     volumes:
       - mysql_dev_data:/var/lib/mysql
       - ./database/init:/docker-entrypoint-initdb.d
@@ -28,10 +28,11 @@ services:
       NODE_ENV: development
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
+      DB_NAME: assetnest
+      DB_USER: assetnest_user
+      DB_PASSWORD: assetnest_password
+      JWT_SECRET: assetnest_jwt_secret_key_for_development_only
+      ALLOWED_ORIGINS: http://localhost:4000,http://localhost:8000
       PORT: 8000
     ports:
       - "8000:8000"
@@ -53,6 +54,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - PORT=4000
+      - REACT_APP_API_URL=http://localhost:8000/api
     ports:
       - "4000:4000"
     volumes:
