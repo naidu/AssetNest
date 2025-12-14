@@ -1,7 +1,8 @@
 const express = require('express');
 const { 
   getTransactions, 
-  createTransaction, 
+  createTransaction,
+  transferTransaction, 
   updateTransaction, 
   deleteTransaction, 
   getCategories 
@@ -17,7 +18,8 @@ router.use(authenticateToken);
 router.get('/', getTransactions);
 router.get('/categories', getCategories);
 router.post('/', validateRequest(schemas.transaction), createTransaction);
-router.put('/:id', updateTransaction);
+router.post('/transfer', validateRequest(schemas.transfer), transferTransaction);
+router.put('/:id', validateRequest(schemas.updateTransaction), updateTransaction);
 router.delete('/:id', deleteTransaction);
 
 module.exports = router;

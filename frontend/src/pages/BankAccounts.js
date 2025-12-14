@@ -37,7 +37,15 @@ import {
   AccountBalanceWallet,
   TrendingUp,
   TrendingDown,
+  Close,
 } from '@mui/icons-material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import apiService from '../services/apiService';
 import { useCurrency } from '../context/CurrencyContext';
 import { formatCurrency } from '../utils/currencyUtils';
@@ -53,6 +61,8 @@ const BankAccounts = () => {
   const [editingAccount, setEditingAccount] = useState(null);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [accountBalance, setAccountBalance] = useState(null);
+  const [selectedAccountTransactions, setSelectedAccountTransactions] = useState([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [formData, setFormData] = useState({
     display_name: '',
     bank_name: '',
@@ -173,6 +183,33 @@ const BankAccounts = () => {
     }
   };
 
+  const handleSelectAccount = async (account) => {
+    try {
+      setLoadingTransactions(true);
+      setSelectedAccount(account);
+      // Fetch all transactions for this account
+      const response = await apiService.getTransactions({ 
+        account_id: account.account_id,
+        limit: 100 
+      });
+      // Filter by currency if needed
+      const filteredTransactions = (response.transactions || []).filter(
+        transaction => transaction.currency === account.currency
+      );
+      setSelectedAccountTransactions(filteredTransactions);
+    } catch (err) {
+      setError('Failed to load account transactions');
+      console.error('Fetch transactions error:', err);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  const handleDeselectAccount = () => {
+    setSelectedAccount(null);
+    setSelectedAccountTransactions([]);
+  };
+
   const getAccountTypeColor = (type) => {
     switch (type) {
       case 'savings': return 'success';
@@ -230,7 +267,21 @@ const BankAccounts = () => {
         {bankAccounts.length > 0 ? (
           bankAccounts.map((account) => (
             <Grid item xs={12} md={6} lg={4} key={account.account_id}>
-              <Card>
+              <Card 
+                sx={{ 
+                  cursor: 'pointer',
+                  border: selectedAccount?.account_id === account.account_id ? 2 : 1,
+                  borderColor: selectedAccount?.account_id === account.account_id ? 'primary.main' : 'divider',
+                  backgroundColor: selectedAccount?.account_id === account.account_id ? 'action.selected' : 'background.paper',
+                  '&:hover': {
+                    boxShadow: 4,
+                    transform: 'translateY(-2px)',
+                    transition: 'all 0.2s ease-in-out',
+                    backgroundColor: 'action.hover'
+                  }
+                }}
+                onClick={() => handleSelectAccount(account)}
+              >
                 <CardContent>
                   <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                     <Box display="flex" alignItems="center" gap={1}>
@@ -239,7 +290,7 @@ const BankAccounts = () => {
                         {account.display_name}
                       </Typography>
                     </Box>
-                    <Box display="flex" gap={1}>
+                    <Box display="flex" gap={1} onClick={(e) => e.stopPropagation()}>
                       <Tooltip title="View Details">
                         <IconButton 
                           size="small" 
@@ -303,6 +354,12 @@ const BankAccounts = () => {
                       IFSC: {account.ifsc_code}
                     </Typography>
                   )}
+                  
+                  <Box mt={2} pt={1} borderTop="1px solid" borderColor="divider">
+                    <Typography variant="caption" color="textSecondary" sx={{ fontStyle: 'italic' }}>
+                      Click card to view transactions
+                    </Typography>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -328,6 +385,90 @@ const BankAccounts = () => {
           </Grid>
         )}
       </Grid>
+
+      {/* Selected Account Transactions */}
+      {selectedAccount && (
+        <Box sx={{ mt: 4 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h5" component="h2">
+              Transactions for {selectedAccount.display_name}
+            </Typography>
+            <Button
+              variant="outlined"
+              startIcon={<Close />}
+              onClick={handleDeselectAccount}
+              size="small"
+            >
+              Close
+            </Button>
+          </Box>
+          
+          {loadingTransactions ? (
+            <Box display="flex" justifyContent="center" py={4}>
+              <CircularProgress />
+            </Box>
+          ) : selectedAccountTransactions.length > 0 ? (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Purpose</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Related Asset</TableCell>
+                    <TableCell>Type</TableCell>
+                    <TableCell align="right">Amount</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {selectedAccountTransactions.map((transaction) => (
+                    <TableRow key={transaction.txn_id} hover>
+                      <TableCell>
+                        {new Date(transaction.txn_date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>{transaction.purpose || '-'}</TableCell>
+                      <TableCell>{transaction.category_name || '-'}</TableCell>
+                      <TableCell>
+                        {transaction.asset_name ? (
+                          <Chip 
+                            label={transaction.asset_name} 
+                            color="secondary" 
+                            size="small" 
+                            variant="outlined"
+                          />
+                        ) : (
+                          <Typography variant="body2" color="textSecondary">-</Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={transaction.txn_type} 
+                          color={transaction.txn_type === 'income' ? 'success' : transaction.txn_type === 'expense' ? 'error' : 'info'} 
+                          size="small" 
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography 
+                          color={transaction.txn_type === 'income' ? 'success.main' : 'error.main'}
+                          fontWeight="bold"
+                        >
+                          {transaction.txn_type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount, transaction.currency, currencies)}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Box textAlign="center" py={4}>
+              <Typography variant="body1" color="textSecondary">
+                No transactions found for this account
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      )}
 
       {/* Add Bank Account Dialog */}
       <Dialog open={openAddModal} onClose={() => setOpenAddModal(false)} maxWidth="md" fullWidth>

@@ -93,6 +93,10 @@ class ApiService {
     return await this.api.delete(`/transactions/${id}`);
   }
 
+  async transferTransaction(transferData) {
+    return await this.api.post('/transactions/transfer', transferData);
+  }
+
   async getCategories() {
     return await this.api.get('/transactions/categories');
   }

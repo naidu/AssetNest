@@ -120,11 +120,13 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`AssetNest API Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
-});
+// Start server unless running in test mode
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`AssetNest API Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+  });
+}
 
 module.exports = app;

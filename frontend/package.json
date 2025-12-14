@@ -22,7 +22,9 @@
     "recharts": "^2.7.2"
   },
   "devDependencies": {
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "@testing-library/jest-dom": "^6.4.4",
+    "@testing-library/react": "^13.4.0"
   },
   "browserslist": {
     "production": [

@@ -22,7 +22,7 @@ const getAssets = async (req, res) => {
       FROM assets a
       JOIN asset_types at ON a.asset_type_id = at.asset_type_id
       LEFT JOIN bank_accounts ba ON a.asset_id = ba.asset_id
-      WHERE a.household_id = ?
+      WHERE a.household_id = ? AND a.asset_type_id != 6
       ORDER BY a.display_name
     `, [req.user.household_id]);
 

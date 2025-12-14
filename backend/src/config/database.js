@@ -38,8 +38,10 @@ const getPool = () => {
   return pool;
 };
 
-// Initialize on module load
-initializeDatabase();
+// Initialize on module load unless in test mode
+if (process.env.NODE_ENV !== 'test') {
+  initializeDatabase();
+}
 
 module.exports = {
   getPool,

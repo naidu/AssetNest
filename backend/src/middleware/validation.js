@@ -48,13 +48,36 @@ const schemas = {
 
   transaction: Joi.object({
     asset_id: Joi.number().integer().optional(),
+    account_id: Joi.number().integer().allow(null).optional(),
     category_id: Joi.number().integer().required(),
     purpose: Joi.string().max(160).optional(),
     txn_type: Joi.string().valid('income', 'expense', 'transfer').required(),
     amount: Joi.number().precision(2).positive().required(),
     currency: Joi.string().length(3).default('INR'),
     txn_date: Joi.date().required(),
-    notes: Joi.string().optional()
+    notes: Joi.string().allow('', null).empty(['', null]).optional()
+  }),
+
+  transfer: Joi.object({
+    from_account_id: Joi.number().integer().required(),
+    to_account_id: Joi.number().integer().required(),
+    amount: Joi.number().precision(2).positive().required(),
+    currency: Joi.string().length(3).default('INR'),
+    txn_date: Joi.date().required(),
+    purpose: Joi.string().max(160).optional(),
+    notes: Joi.string().allow('', null).empty(['', null]).optional()
+  }),
+
+  updateTransaction: Joi.object({
+    asset_id: Joi.number().integer().allow(null).optional(),
+    account_id: Joi.number().integer().allow(null).optional(),
+    category_id: Joi.number().integer().required(),
+    purpose: Joi.string().max(160).optional(),
+    txn_type: Joi.string().valid('income', 'expense', 'transfer').required(),
+    amount: Joi.number().precision(2).positive().required(),
+    currency: Joi.string().length(3).default('INR'),
+    txn_date: Joi.date().required(),
+    notes: Joi.string().allow('', null).empty(['', null]).optional()
   }),
 
   budget: Joi.object({
