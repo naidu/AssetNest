@@ -1,0 +1,80 @@
+# Contabo deployment for assetnest.btrnaidu.com.
+# No local NPM here — pri's NPM reaches the frontend over the WireGuard
+# tunnel, so it's published on the tunnel interface instead of joining a
+# shared db_network.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: assetnest-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - assetnest-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assetnest-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://assetnest.btrnaidu.com,https://www.assetnest.btrnaidu.com}
+      PORT: 8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - assetnest-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-https://assetnest.btrnaidu.com/api}
+    container_name: assetnest-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "10.10.10.2:8082:80"
+    networks:
+      - assetnest-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql_data:
+    name: assetnest-db
+
+networks:
+  assetnest-network:
+    driver: bridge
+    name: assetnest-network
